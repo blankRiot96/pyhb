@@ -18,7 +18,7 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
-    install_requires=['pygame', 'keyboard', 'tabulate'],
+    install_requires=['pygame', 'keyboard', 'requests'],
     python_requires='>=3.7',
     keywords=["aesthetic", "typing test"],
     classifiers=[
@@ -28,5 +28,10 @@ setup(
         "Programming Languages :: Python :: 3.9",
         "Programming Languages :: Python :: 3.10",
         "Intended Audience :: Desktop users"
-    ]
+    ],
+    entry_scrips={
+        "console_scripts": [
+            "pyhb = pyhb:main"
+        ]
+    }
 )
