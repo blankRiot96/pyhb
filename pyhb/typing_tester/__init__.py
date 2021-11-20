@@ -57,22 +57,9 @@ def main():
                 if count == "delete":
                     delete = True
 
-        # Draw background
-        screen.fill((35, 0, 64))
-
-        # todo
-        # If len(user_text) == 45
-        # Make a new line
-        shadow_text = font.render(correct_text, True, "white")
-        text = font.render(user_text + cursor, True, "white")
-
-        shadow_text.set_alpha(150)
-        if show_shadow:
-            screen.blit(shadow_text, (screen_width//4, screen_height//4))
-        screen.blit(text, (screen_width//4, screen_height//4))
-
         keys = pygame.key.get_pressed()
         if keys[pygame.K_BACKSPACE] and delete:
+            cursor = "|"
             try:
                 user_text = user_text[:-1]
             except IndexError:
@@ -83,9 +70,8 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_BACKSPACE:
-                    user_text = user_text[:-1]
-                else:
+                cursor = "|"
+                if not event.key == pygame.K_BACKSPACE:
                     try:
                         user_text += chr(event.key)
                     except ValueError:
@@ -95,10 +81,24 @@ def main():
                 else:
                     show_shadow = False
 
+        # Draw background
+        screen.fill((35, 0, 64))
+
+        # todo
+        # If len(user_text) == 45
+        # Make a new line
+
+        # Draw text
+        shadow_text = font.render(correct_text, True, "white")
+        text = font.render(user_text + cursor, True, "white")
+
+        shadow_text.set_alpha(150)
+        if show_shadow:
+            screen.blit(shadow_text, (screen_width//4, screen_height//4))
+        screen.blit(text, (screen_width//4, screen_height//4))
+
         pygame.display.update()
 
     pygame.quit()
 
 
-if __name__ == '__main__':
-    main()
