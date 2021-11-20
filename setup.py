@@ -18,10 +18,15 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
-    install_requires=['pygame'],
+    install_requires=['pygame', 'keyboard', 'tabulate'],
+    python_requires='>=3.7',
     keywords=["aesthetic", "typing test"],
     classifiers=[
-        "Programming Languages :: Python 3",
+        "Licence ::  :: GPLv3"
+        "Programming Languages :: Python :: 3.7",
+        "Programming Languages :: Python :: 3.8",
+        "Programming Languages :: Python :: 3.9",
+        "Programming Languages :: Python :: 3.10",
         "Intended Audience :: Desktop users"
     ]
 )
