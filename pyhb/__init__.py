@@ -5,13 +5,14 @@ from pyhb.table import list_info
 
 
 def main():
+    user_path = os.path.dirname(os.path.realpath(__file__))
     try:
         commands = {
             "play": {
                 "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
             },
             "start": ["typetest"],
-            "soundpacks": os.listdir("pyhb/Soundpacks"),
+            "soundpacks": os.listdir(user_path + "/Soundpacks"),
             "install": ["soundpacks"]
         }
         commands["soundpacks"].remove("config.json")
