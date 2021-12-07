@@ -24,6 +24,7 @@ def set_release(*args, **kwargs):
 
 
 def main(sound_pack: str) -> None:
+    user_path = os.path.dirname(os.path.realpath(__file__))
     """
     :param sound_pack: Name of the sound pack
     :return: None
@@ -38,10 +39,10 @@ def main(sound_pack: str) -> None:
                 continue
             if keyboard.is_pressed(value) and RELEASED:
                 if sound_pack == "nk-cream":
-                    sound = pygame.mixer.Sound(f"pyhb/Soundpacks/{sound_pack}/{value}.wav")
+                    sound = pygame.mixer.Sound(f"{user_path}/Soundpacks/{sound_pack}/{value}.wav")
                     sound.play()
                 else:
-                    sound = pygame.mixer.Sound(f"pyhb/Soundpacks/{sound_pack}/{key}.ogg")
+                    sound = pygame.mixer.Sound(f"{user_path}/Soundpacks/{sound_pack}/{key}.ogg")
                     sound.play()
                 RELEASED = False
         keyboard.on_release(set_release)
