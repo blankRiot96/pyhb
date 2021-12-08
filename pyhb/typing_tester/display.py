@@ -4,10 +4,10 @@ from pygame._sdl2 import Window
 pygame.init()
 
 clock = pygame.time.Clock()
-FPS = 60
+FPS = 100
 
-screen_width = 1100
-screen_height = 600
+screen_width = 700
+screen_height = 400
 
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
 # screen = pygame.Surface((screen_width, screen_height))
