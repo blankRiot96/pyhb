@@ -1,8 +1,8 @@
-import time
-
 import pygame
-
+import time
 from pyhb.typing_tester.display import *
+from pyhb.typing_tester.passage_generator import get_sentences
+from pyhb.typing_tester.words import words
 
 
 def main():
@@ -17,7 +17,6 @@ def main():
     ]
     lines = [""]
     correct_text = " ".join(correct_lines)
-    print(correct_text)
     user_text = ""
     cursor = "|"
 
@@ -46,12 +45,12 @@ def main():
         clock.tick()
 
         # Calculating Delta Time
-        end = time.time()
+        end = time.perf_counter()
 
         dt = end - start
-        dt *= 60
+        dt *= FPS
 
-        start = time.time()
+        start = time.perf_counter()
 
         # Handling count variables
         if count_vars['delete'] <= cooldowns['delete']:
@@ -104,17 +103,21 @@ def main():
 
         # Draw background
         screen.fill((35, 0, 64))
+        # win.fill((34, 0, 64))
 
         # todo
         # If len(user_text) == 45
         # Make a new line
         if show_shadow:
-            for line in correct_lines:
+            for _index, line in enumerate(correct_lines):
                 shadow_text = font.render(line, True, "white")
+                shadow_rect = shadow_text.get_rect(center=screen.get_rect().center)
                 shadow_text.set_alpha(150)
-                screen.blit(shadow_text, (screen_width // 4, (screen_height // 4) + correct_lines.index(line) * 30))
 
-        for line in lines:
+                
+                screen.blit(shadow_text, (shadow_rect.topleft[0], shadow_rect.topleft[1] + _index*shadow_text.get_height()))
+
+        for _index, line in enumerate(lines):
             if line == lines[-1]:
                 eptic = line + cursor
             else:
@@ -124,8 +127,9 @@ def main():
             text = font.render(eptic, True, "white")
 
             # Draw text
-            screen.blit(text, (screen_width // 4, (screen_height // 4) + lines.index(line) * 30))
+            screen.blit(text, (shadow_rect.topleft[0], shadow_rect.topleft[1] + _index*shadow_text.get_height()))
 
+        # win.blit(screen, (50, 50))
         pygame.display.update()
 
     pygame.quit()

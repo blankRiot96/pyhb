@@ -1,6 +1,7 @@
 import requests
 from typing import List, Union
 import json
+import time
 
 
 Passage = Union[List[str], str]
@@ -35,4 +36,5 @@ def get_sentences(n: int) -> Passage:
     
 
     return (sentences[0], sentences)[len(sentences) > 1]
+
 
