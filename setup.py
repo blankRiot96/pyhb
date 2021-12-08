@@ -27,11 +27,11 @@ setup(
         "Programming Languages :: Python :: 3.8",
         "Programming Languages :: Python :: 3.9",
         "Programming Languages :: Python :: 3.10",
-        "Intended Audience :: Desktop users"
+        "Intended Audience :: People who like Aesthetic setups and Lofi music."
     ],
-    entry_scrips={
+    entry_points={
         "console_scripts": [
-            "pyhb = pyhb:main"
+            "pyhb=pyhb:main"
         ]
     }
 )
