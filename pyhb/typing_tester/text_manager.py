@@ -72,7 +72,7 @@ class TextManager:
         self.passage += self.generate_valid_lines(n)
 
 
-    def update(self, dt) -> None:
+    def update(self, events, dt) -> None:
         self.dt = dt
 
         # Handle count variables
@@ -87,9 +87,8 @@ class TextManager:
             self.delete_count = 0
 
         # Handle keyboard inputs
-        
         # Event loop: single click
-        for event in pygame.event.get():
+        for event in events:
             if event.type == pygame.QUIT:
                 exit()
 

@@ -15,7 +15,7 @@ def get_words(n: int) -> Passage:
     # Most commonly used English words API
     url = "https://most-common-words.herokuapp.com/api/search?top="
 
-    words = [requests.get(url + str(i)).json()['word'] for i in range(1, n+1)]
+    words = [requests.get(url + str(i)).json()["word"] for i in range(1, n + 1)]
     return (words[0], words)[len(words) > 1]
 
 
@@ -32,9 +32,6 @@ def get_sentences(n: int) -> List[str]:
     # which is a bytes json string: b'{"text": "some very random fact"}'
     # json.loads() converts that text into a Python object
     # 'text' is the key which holds the value of the random fact
-    sentences = [json.loads(requests.get(url).content)['text'] for _ in range(n)]
-    
+    sentences = [json.loads(requests.get(url).content)["text"] for _ in range(n)]
 
     return sentences
-
-

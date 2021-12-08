@@ -11,8 +11,11 @@ screen_height = 400
 
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
 # screen = pygame.Surface((screen_width, screen_height))
-pygame.display.set_caption('HeartBeat Typing Test')
+pygame.display.set_caption("HeartBeat Typing Test")
 
 # Setting SDL2 Window and its opacity
 window = Window.from_display_module()
 window.opacity = 0.8
+
+# Hiding cursor
+pygame.mouse.set_visible(False)
