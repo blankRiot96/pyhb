@@ -19,7 +19,7 @@ def get_words(n: int) -> Passage:
     return (words[0], words)[len(words) > 1]
 
 
-def get_sentences(n: int) -> Passage:
+def get_sentences(n: int) -> List[str]:
     """
     :param n: Number of sentences to be returned.
     """
@@ -35,6 +35,6 @@ def get_sentences(n: int) -> Passage:
     sentences = [json.loads(requests.get(url).content)['text'] for _ in range(n)]
     
 
-    return (sentences[0], sentences)[len(sentences) > 1]
+    return sentences
 
 
