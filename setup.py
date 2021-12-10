@@ -33,5 +33,9 @@ setup(
         "console_scripts": [
             "pyhb=pyhb:main"
         ]
+    },
+    include_package_data=True,
+    package_data={
+        'sample': ['settings_icon.png'],
     }
 )

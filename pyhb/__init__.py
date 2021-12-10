@@ -5,26 +5,26 @@ from pyhb.table import list_info
 
 
 def main():
-    user_path = os.path.dirname(os.path.realpath(__file__))
+    # Path to which 'pyhb' is installed
+    user_path = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
+    
+    # Check if soundpacks are installed
     try:
-        commands = {
-            "play": {
-                "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
-            },
-            "start": ["typetest"],
-            "soundpacks": os.listdir(user_path + "/Soundpacks"),
-            "install": ["soundpacks"]
-        }
-        commands["soundpacks"].remove("config.json")
+        soundpacks = os.listdir(user_path + "/Soundpacks")
+        soundpacks.remove('config.json')
     except FileNotFoundError:
-        commands = {
-            "play": {
-                "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
-            },
-            "start": ["typetest"],
-            "soundpacks": [],
-            "install": ["soundpacks"]
-        }
+        soundpacks = []
+
+    commands = {
+        "play": {
+            "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
+            "biscuit": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY"
+        },
+        "start": ["typetest"],
+        "soundpacks": soundpacks,
+        "install": ["soundpacks"]
+    }
+
 
     def try_index(index: int) -> str:
         try:
@@ -55,7 +55,7 @@ def main():
         if optional_arg in commands[flag]:
             if optional_arg == "soundpacks":
                 from pyhb.install_soundpacks import install
-                install(os.path.dirname(os.path.realpath(__file__)).replace("\\", "/"))
+                install(os.path.dirname(os.path.realpath(__file__)))
             else:
                 print(f"Invalid argument for the '{flag} flag'")
                 list_info(commands[flag])

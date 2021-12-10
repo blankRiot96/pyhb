@@ -20,6 +20,7 @@ class TextManager:
         self.delete = True
         self.start_stack = False
         self.punctuation = punctuation
+        self.correct = True
 
         # Count variables
         self.dt = 0
@@ -38,14 +39,17 @@ class TextManager:
 
         
 
-    def generate_valid_lines(self, n: int) -> List[str]:
+    def generate_valid_lines(self, n: int=None, clington=None) -> List[str]:
         """
         :param n: Number of full sentences to be generated. Number of lines may differ.
         """
 
         lines = ""
-        if self.punctuation:
-            punctuated_lines: List[str] = get_sentences(n)
+        if self.punctuation or clington:
+            if clington:
+                punctuated_lines = clington
+            else:
+                punctuated_lines: List[str] = get_sentences(n)
             for p in punctuated_lines:
                 line = ""
                 for word in p.split():
@@ -73,7 +77,14 @@ class TextManager:
 
 
     def update(self, events, dt) -> None:
+        # self.passage = self.generate_valid_lines(clington=self.passage)
         self.dt = dt
+
+        index = len(self.user_passage[self.current_line])
+        if self.user_passage[self.current_line] == self.passage[self.current_line][:index]:
+            self.correct = True
+        else:
+            self.correct = False
 
         # Handle count variables
         self.cursor_count += self.dt
@@ -114,7 +125,6 @@ class TextManager:
             if self.user_passage[self.current_line]:
                 self.user_passage[self.current_line] = self.user_passage[self.current_line][:-1]
             elif self.current_line != 0:
-                print("REDACTED")
                 self.current_line -= 1
         elif self.start_stack:
             self.stack += self.dt
@@ -126,6 +136,7 @@ class TextManager:
         self.delete = False
 
 
+    # TODO: Work on correction of user text
     def draw(self) -> None:
         positions = []
 
@@ -139,7 +150,7 @@ class TextManager:
             positions.append(pos)
 
             self.screen.blit(text, pos)
-        
+            
         # User text
         for index, line in enumerate(self.user_passage):
             if index == self.current_line:
@@ -151,6 +162,6 @@ class TextManager:
             text = self.font.render(line, True, 'white')
 
             self.screen.blit(text, positions[index])
-        
+    
 
 
