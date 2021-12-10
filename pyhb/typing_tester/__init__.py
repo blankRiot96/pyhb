@@ -1,17 +1,18 @@
 import pygame
 import time
 from pyhb.typing_tester.display import *
+from pyhb.typing_tester.settings import Settings
 from pyhb.typing_tester.text_manager import TextManager
 from pyhb.typing_tester.cursor import Cursor
 from pyhb.typing_tester.dynamic_color import return_color
 from pyhb.typing_tester.exp_circle import ExpandingCircles
+from pyhb.typing_tester.settings import Settings
 
 
 def main():
     # Connecting vars
     color = [0, 0, 0]
     direction = "up"
-    unicode = ""
     clicks = 0
 
     # Event vars
@@ -22,8 +23,11 @@ def main():
     console = TextManager(screen, punctuation=False, color=(255, 255, 255))
     cursor = Cursor(color, 2)
     expanding_circles = ExpandingCircles(
-        init_radius=5, max_radius=40, increment=3, colour=(255, 255, 255), width=15
+        init_radius=5, max_radius=40, increment=3, colour=(255, 255, 255), width=10
     )
+    bg_color = (35, 0, 64)
+    settings = Settings()
+
 
     # Time variables
     start = time.perf_counter()
@@ -65,7 +69,7 @@ def main():
             exp_event = False
 
         # Draw background
-        screen.fill((35, 0, 64))
+        screen.fill(bg_color)
 
         # Dynamic color
         color, direction = return_color(color, direction, dt)
@@ -73,6 +77,9 @@ def main():
         # Text console
         console.update(events, dt)
         console.draw()
+
+        # Settings
+        settings.draw(screen)
 
         # Click effect
         expanding_circles.update(exp_event, mouse_pos)
