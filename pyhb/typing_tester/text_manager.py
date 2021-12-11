@@ -7,13 +7,16 @@ from pyhb.typing_tester.words import words
 
 class TextManager:
     def __init__(self, screen: pygame.Surface, punctuation: bool, color: Tuple[int, int, int]):
-        self.font = pygame.font.SysFont("leelawadee", 25)
+        self.font = pygame.font.SysFont("leelawadee", 24)
         self.color = color
         self.screen = screen
 
         # User input
         self.user_passage: List[str] = [""]
         self.current_line = 0
+        self.current_indeces = {
+            self.current_line: -1
+        }
         self.cursor = "|"
 
         # Flags 
@@ -29,10 +32,16 @@ class TextManager:
         self.stack = 0
 
         # Constant config variables
-        self.MAX_LINE_LENGTH = 50 
+        self.FONT_WIDTH, self.FONT_HEIGHT = 13, 25
+        self.MAX_LINE_LENGTH = 40
         self.CURSOR_COOLDOWN = 50
         self.DELETE_COOLDOWN = 6
         self.STACK_LIMIT = 60
+
+        # Surface
+        self.surf = pygame.Surface((self.screen.get_width(), 4 * self.font.get_height()))
+        self.surf_rect = self.surf.get_rect()
+        self.surf.set_colorkey((0, 0, 0))
 
         self.passage: List[str] = []
         self.append_passage(6)
@@ -80,11 +89,11 @@ class TextManager:
         # self.passage = self.generate_valid_lines(clington=self.passage)
         self.dt = dt
 
-        index = len(self.user_passage[self.current_line])
-        if self.user_passage[self.current_line] == self.passage[self.current_line][:index]:
-            self.correct = True
-        else:
-            self.correct = False
+        # index = len(self.user_passage[self.current_line])
+        # if self.user_passage[self.current_line] == self.passage[self.current_line][:index]:
+        #     self.correct = True
+        # else:
+        #     self.correct = False
 
         # Handle count variables
         self.cursor_count += self.dt
@@ -97,6 +106,10 @@ class TextManager:
             self.delete = True
             self.delete_count = 0
 
+        if self.current_line >= len(self.passage) - 2:
+            self.append_passage(3)
+            self.passage.remove('')
+
         # Handle keyboard inputs
         # Event loop: single click
         for event in events:
@@ -105,18 +118,29 @@ class TextManager:
 
             if event.type == pygame.KEYDOWN:
                 if not event.key == pygame.K_BACKSPACE:
+                    self.cursor = "|"
+
+                    self.current_indeces[self.current_line] += 1
                     try:
-                        self.user_passage[self.current_line] += event.unicode
+                        if len(self.user_passage[self.current_line]) <= len(self.passage[self.current_line]):
+                            self.user_passage[self.current_line] += event.unicode
                     except ValueError:
                         pass
 
-                    if len(self.user_passage[self.current_line]) >= len(self.passage[self.current_line]):
+                    if self.current_line < len(self.passage) and len(self.user_passage[self.current_line]) >= len(self.passage[self.current_line]):
                         self.current_line += 1
+                        self.current_indeces[self.current_line] = -1
+
                         self.user_passage.append("")
                 else:
-                    self.user_passage[self.current_line] = self.user_passage[self.current_line][:-1]
+                    self.user_passage[self.current_line] = self.user_passage[self.current_line][:-1]                    
+                    self.current_indeces[self.current_line] -= 1
+
                     if self.current_line != 0 and not self.user_passage[self.current_line]:
                         self.current_line -= 1
+                        self.current_indeces[self.current_line] = -1
+
+
                     self.start_stack = True
 
         # keys: hold keys
@@ -124,8 +148,10 @@ class TextManager:
         if keys[pygame.K_BACKSPACE] and self.delete and not self.start_stack:
             if self.user_passage[self.current_line]:
                 self.user_passage[self.current_line] = self.user_passage[self.current_line][:-1]
+                self.current_indeces[self.current_line] -= 1
             elif self.current_line != 0:
                 self.current_line -= 1
+                self.current_indeces[self.current_line] = -1
         elif self.start_stack:
             self.stack += self.dt
             if self.stack >= self.STACK_LIMIT:
@@ -136,32 +162,90 @@ class TextManager:
         self.delete = False
 
 
-    # TODO: Work on correction of user text
     def draw(self) -> None:
+        self.surf.fill(0)
+        screen_center = self.screen.get_rect().center
+        screen_topleft = self.screen.get_rect().topleft
         positions = []
 
+
         # Shadow text
-        for index, line in enumerate(self.passage):
-            text = self.font.render(line, True, 'white')
-            text.set_alpha(150)
-            text_rect = text.get_rect(center=self.screen.get_rect().center)
-            pos = (text_rect.topleft[0], text_rect.topleft[1] + index * text_rect.height)
+        for row, line in enumerate(self.passage):
+            stub = []
+            for column, char in enumerate(line):
+                if self.current_line >= row and self.current_indeces[row] >= column and self.user_passage[row]:
+                    try:
+                        if self.user_passage[row][column] == self.passage[row][column]:
+                            color = 'white'
+                        else:
+                            color = 'red'
+                    except IndexError:
+                        print(185)
+                        print(row, column)
+
+                        with open('dump.txt', 'w') as f:
+                            f.write("\n".join(self.user_passage))
+                        
+                        with open('dump2.txt', 'w') as f:
+                            f.write("\n".join(self.passage))
+                        exit()
+                else:
+                    color = 'white'
+
+                text = self.font.render(char, True, color)
+                text.set_alpha(150)
+
+                text_rect = text.get_rect(center=(self.surf.get_rect().centerx - 250, 10))
+                pos = (text_rect.topleft[0] + column * self.FONT_WIDTH, text_rect.topleft[1] + row * self.FONT_HEIGHT)
+
+                stub.append(pos)
+                # print(pos)
+                self.surf.blit(text, pos)
+            positions.append(stub)
+
+        for row, line in enumerate(self.user_passage):
+            for column, char in enumerate(line):
+                try:
+                    if self.user_passage[row][column] == self.passage[row][column]:
+                        text = self.font.render(char, True, 'white')
+                        self.surf.blit(text, positions[row][column])
+                except IndexError:
+                    print(211)
+                    print(row, column)
+
+                    with open('dump.txt', 'w') as f:
+                        f.write("\n".join(self.user_passage))
+                    
+                    with open('dump2.txt', 'w') as f:
+                        f.write("\n".join(self.passage))
+                    exit()
+
+
+
+        self.surf_rect = self.surf.get_rect(center=screen_center)
+        self.screen.blit(self.surf, self.surf_rect)
+        # # Shadow text
+        # for index, line in enumerate(self.passage):
+        #     text = self.font.render(line, True, 'white')
+        #     text.set_alpha(150)
+        #     text_rect = text.get_rect(center=self.screen.get_rect().center)
+        #     pos = (text_rect.topleft[0], text_rect.topleft[1] + index * text_rect.height)
         
-            positions.append(pos)
+        #     positions.append(pos)
 
-            self.screen.blit(text, pos)
+        #     self.screen.blit(text, pos)
             
-        # User text
-        for index, line in enumerate(self.user_passage):
-            if index == self.current_line:
-                line += self.cursor
+        # # User text
+        # for index, line in enumerate(self.user_passage):
+        #     if index == self.current_line:
+        #         line += self.cursor
             
-            compliment = len(self.passage[index]) - len(self.user_passage[index])
-            buffer = " "*compliment
-            line += buffer
-            text = self.font.render(line, True, 'white')
+        #     compliment = len(self.passage[index]) - len(self.user_passage[index])
+        #     buffer = " "*compliment
+        #     line += buffer
+        #     text = self.font.render(line, True, 'white')
 
-            self.screen.blit(text, positions[index])
+        #     self.screen.blit(text, positions[index])
     
 
 

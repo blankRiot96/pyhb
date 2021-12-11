@@ -699,4 +699,4 @@ number
 depict
 nation
 first
-"""
+""".lower()
