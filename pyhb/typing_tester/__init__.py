@@ -79,7 +79,7 @@ def main():
         console.draw()
 
         # Settings
-        settings.draw(screen)
+        # settings.draw(screen)
 
         # Click effect
         expanding_circles.update(exp_event, mouse_pos)
