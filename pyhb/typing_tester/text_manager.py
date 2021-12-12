@@ -37,6 +37,7 @@ class TextManager:
         self.CURSOR_COOLDOWN = 50
         self.DELETE_COOLDOWN = 6
         self.STACK_LIMIT = 60
+        self.START_SCROLL_AFTER = 2
 
         # Surface
         self.surf = pygame.Surface((self.screen.get_width(), 4 * self.font.get_height()))
@@ -106,7 +107,7 @@ class TextManager:
             self.delete = True
             self.delete_count = 0
 
-        if self.current_line >= len(self.passage) - 2:
+        if self.current_line >= len(self.passage) - 4:
             self.append_passage(3)
             self.passage.remove('')
 
@@ -117,13 +118,15 @@ class TextManager:
                 exit()
 
             if event.type == pygame.KEYDOWN:
-                if not event.key == pygame.K_BACKSPACE:
+                if event.key != pygame.K_BACKSPACE:
                     self.cursor = "|"
 
                     self.current_indeces[self.current_line] += 1
                     try:
-                        if len(self.user_passage[self.current_line]) <= len(self.passage[self.current_line]):
+                        if len(self.user_passage[self.current_line]) < len(self.passage[self.current_line]):
                             self.user_passage[self.current_line] += event.unicode
+                        else:
+                            print('DEBUG')
                     except ValueError:
                         pass
 
@@ -138,7 +141,6 @@ class TextManager:
 
                     if self.current_line != 0 and not self.user_passage[self.current_line]:
                         self.current_line -= 1
-                        self.current_indeces[self.current_line] = -1
 
 
                     self.start_stack = True
@@ -149,9 +151,9 @@ class TextManager:
             if self.user_passage[self.current_line]:
                 self.user_passage[self.current_line] = self.user_passage[self.current_line][:-1]
                 self.current_indeces[self.current_line] -= 1
+                self.cursor = "|"
             elif self.current_line != 0:
                 self.current_line -= 1
-                self.current_indeces[self.current_line] = -1
         elif self.start_stack:
             self.stack += self.dt
             if self.stack >= self.STACK_LIMIT:
@@ -195,7 +197,11 @@ class TextManager:
                 text = self.font.render(char, True, color)
                 text.set_alpha(150)
 
-                text_rect = text.get_rect(center=(self.surf.get_rect().centerx - 250, 10))
+
+                increment = (self.FONT_HEIGHT * -(self.current_line - self.START_SCROLL_AFTER)) if self.current_line >= self.START_SCROLL_AFTER else 0
+                text_rect = text.get_rect(center=(self.surf.get_rect().centerx - 250, 10 + increment))
+                # pos = (text_rect.topleft[0] + column * self.FONT_WIDTH, text_rect.topleft[1] + row * self.FONT_HEIGHT)
+
                 pos = (text_rect.topleft[0] + column * self.FONT_WIDTH, text_rect.topleft[1] + row * self.FONT_HEIGHT)
 
                 stub.append(pos)
@@ -203,12 +209,23 @@ class TextManager:
                 self.surf.blit(text, pos)
             positions.append(stub)
 
+        current_pos = list(self.current_indeces.items())[-1]
         for row, line in enumerate(self.user_passage):
             for column, char in enumerate(line):
+                curt = False
+                if (row, column) == current_pos:
+                    text = self.font.render(char + self.cursor, True, 'white')
+                    curt = True
+                else:
+                    text = self.font.render(char, True, 'white')
+                    
                 try:
                     if self.user_passage[row][column] == self.passage[row][column]:
-                        text = self.font.render(char, True, 'white')
                         self.surf.blit(text, positions[row][column])
+                    elif curt:
+                        cursor = self.font.render(self.cursor, True, 'white')
+                        pos = (positions[row][column][0] + self.FONT_WIDTH, positions[row][column][1])
+                        self.surf.blit(cursor, pos)
                 except IndexError:
                     print(211)
                     print(row, column)
