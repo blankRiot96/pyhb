@@ -18,7 +18,12 @@ def main():
     commands = {
         "play": {
             "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
-            "biscuit": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY"
+            "biscuit": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY",
+            "melancholy": "https://www.youtube.com/watch?v=RxglYGHuqFc",
+            "street lights": "https://www.youtube.com/watch?v=FqXwkqfVGvA",
+            "memory lane": "https://www.youtube.com/watch?v=6LXTuNDB160",
+            "jiro dreams": "https://www.youtube.com/watch?v=sEYSpROMY5A",
+            "*": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD"
         },
         "start": ["typetest"],
         "soundpacks": soundpacks,

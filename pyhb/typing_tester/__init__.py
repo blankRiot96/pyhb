@@ -1,5 +1,7 @@
 import pygame
 import time
+
+from pygame import mouse
 from pyhb.typing_tester.display import *
 from pyhb.typing_tester.settings import Settings
 from pyhb.typing_tester.text_manager import TextManager
@@ -13,11 +15,6 @@ def main():
     # Connecting vars
     color = [0, 0, 0]
     direction = "up"
-    clicks = 0
-
-    # Event vars
-    c_event = False
-    exp_event = False
 
     # Object init
     console = TextManager(screen, punctuation=False, color=(255, 255, 255))
@@ -55,19 +52,6 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                clicks += 1
-
-            if event.type == pygame.MOUSEBUTTONUP:
-                clicks += 1
-
-        # print(c_event)
-        if clicks == 2:
-            clicks = 0
-            exp_event = True
-        else:
-            exp_event = False
-
         # Draw background
         screen.fill(bg_color)
 
@@ -79,10 +63,11 @@ def main():
         console.draw()
 
         # Settings
-        # settings.draw(screen)
+        settings.update(mouse_pos, events, dt)
+        settings.draw(screen)
 
         # Click effect
-        expanding_circles.update(exp_event, mouse_pos)
+        expanding_circles.update(events, mouse_pos)
         expanding_circles.draw(screen, dt)
 
         # Cursor
