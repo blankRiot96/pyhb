@@ -99,7 +99,7 @@ class TextManager:
         # Handle count variables
         self.cursor_count += self.dt
         if self.cursor_count >= self.CURSOR_COOLDOWN:
-            self.cursor = "|" if self.cursor == "" else ""
+            self.cursor = "|" if self.cursor else ""
             self.cursor_count = 0
 
         self.delete_count += self.dt
@@ -181,9 +181,12 @@ class TextManager:
                             color = 'white'
                         else:
                             color = 'red'
-                    except IndexError:
+                    except IndexError as err:
+                        print(err)
                         print(185)
                         print(row, column)
+                        print(len(self.user_passage[self.current_line]))
+                        print(len(self.passage[self.current_line]))
 
                         with open('dump.txt', 'w') as f:
                             f.write("\n".join(self.user_passage))
@@ -229,6 +232,8 @@ class TextManager:
                 except IndexError:
                     print(211)
                     print(row, column)
+                    print(len(self.user_passage[self.current_line]))
+                    print(len(self.passage[self.current_line]))
 
                     with open('dump.txt', 'w') as f:
                         f.write("\n".join(self.user_passage))
