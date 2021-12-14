@@ -2,6 +2,7 @@
 Soundpacks/
 dump.txt
 dump2.txt
+*.prof
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

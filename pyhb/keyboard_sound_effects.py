@@ -3,7 +3,7 @@ import os
 import random
 
 # Ignore the pygame welcome message
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
 import json
 
@@ -14,7 +14,10 @@ pygame.mixer.init()
 RELEASED = True
 
 try:
-    with open(os.path.dirname(os.path.realpath(__file__)).replace("\\", "/") + '/Soundpacks/config.json') as f:
+    with open(
+        os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
+        + "/Soundpacks/config.json"
+    ) as f:
         config = json.load(f)
 except FileNotFoundError:
     print("Soundpacks not installed, try doing 'pyhb install soundpacks'")
@@ -32,12 +35,11 @@ def main(sound_pack: str) -> None:
     :return: None
     """
     global RELEASED
-    print(f'pyhb has started playing {sound_pack}...')
-    print('Use <ctrl + c> to close')
+    print(f"pyhb has started playing {sound_pack}...")
+    print("Use <ctrl + c> to close")
 
-
-    conf_vals = list(config['defines'].values())
-    conf_keys = list(config['defines'].keys())
+    conf_vals = list(config["defines"].values())
+    conf_keys = list(config["defines"].keys())
 
     session = {}
     while True:
@@ -45,7 +47,9 @@ def main(sound_pack: str) -> None:
         if key_pressed in conf_vals:
             if RELEASED:
                 if sound_pack == "nk-cream":
-                    sound = pygame.mixer.Sound(f"{user_path}/Soundpacks/{sound_pack}/{key_pressed}.wav")
+                    sound = pygame.mixer.Sound(
+                        f"{user_path}/Soundpacks/{sound_pack}/{key_pressed}.wav"
+                    )
                 else:
                     index = conf_vals.index(key_pressed)
                     key = conf_keys[index]
@@ -60,10 +64,14 @@ def main(sound_pack: str) -> None:
 
         if RELEASED:
             if sound_pack == "nk-cream":
-                sound = pygame.mixer.Sound(f"{user_path}/Soundpacks/{sound_pack}/{key_pressed}.wav")
+                sound = pygame.mixer.Sound(
+                    f"{user_path}/Soundpacks/{sound_pack}/{key_pressed}.wav"
+                )
             else:
-                sound = pygame.mixer.Sound(f"{user_path}/Soundpacks/{sound_pack}/{key}.ogg")
+                sound = pygame.mixer.Sound(
+                    f"{user_path}/Soundpacks/{sound_pack}/{key}.ogg"
+                )
             sound.play()
             RELEASED = False
-        
+
         keyboard.on_release(set_release)
