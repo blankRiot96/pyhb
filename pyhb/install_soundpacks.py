@@ -11,7 +11,7 @@ def install(path: str) -> None:
     'pyhb install soundpacks' command
     """
     print("Installing all the files now...")
-    url = 'https://github.com/blankRiot96/hello_cargo/files/7574193/Soundpacks.zip'
+    url = "https://github.com/blankRiot96/hello_cargo/files/7574193/Soundpacks.zip"
     r = requests.get(url, allow_redirects=True)
 
     with open(path + "/Soundpacks.zip", "wb") as f:
@@ -19,11 +19,10 @@ def install(path: str) -> None:
 
     file_name = path + "/Soundpacks.zip"
 
-    
     # Extracting zip file
-    with ZipFile(file_name, 'r') as f:
+    with ZipFile(file_name, "r") as f:
         f.extractall(path=path)
-        print('Done!')
+        print("Done!")
 
     # Removing zip file
     if os.path.exists(path + "/Soundpacks.zip"):

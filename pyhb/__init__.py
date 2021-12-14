@@ -7,11 +7,11 @@ from pyhb.table import list_info
 def main():
     # Path to which 'pyhb' is installed
     user_path = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
-    
+
     # Check if soundpacks are installed
     try:
         soundpacks = os.listdir(user_path + "/Soundpacks")
-        soundpacks.remove('config.json')
+        soundpacks.remove("config.json")
     except FileNotFoundError:
         soundpacks = []
 
@@ -23,13 +23,12 @@ def main():
             "street lights": "https://www.youtube.com/watch?v=FqXwkqfVGvA",
             "memory lane": "https://www.youtube.com/watch?v=6LXTuNDB160",
             "jiro dreams": "https://www.youtube.com/watch?v=sEYSpROMY5A",
-            "*": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD"
+            "*": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD",
         },
         "start": ["typetest"],
         "soundpacks": soundpacks,
-        "install": ["soundpacks"]
+        "install": ["soundpacks"],
     }
-
 
     def try_index(index: int) -> str:
         try:
@@ -52,6 +51,7 @@ def main():
         if optional_arg in commands[flag]:
             if optional_arg == "typetest":
                 from pyhb.typing_tester import main
+
                 main()
         else:
             print(f"Invalid argument for the '{flag}' flag")
@@ -60,6 +60,7 @@ def main():
         if optional_arg in commands[flag]:
             if optional_arg == "soundpacks":
                 from pyhb.install_soundpacks import install
+
                 install(os.path.dirname(os.path.realpath(__file__)))
             else:
                 print(f"Invalid argument for the '{flag} flag'")
@@ -75,4 +76,3 @@ def main():
                 main(flag)
             except KeyboardInterrupt:
                 print("You have closed the program.")
-

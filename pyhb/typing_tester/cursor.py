@@ -82,7 +82,7 @@ class Particle:
 
 class Cursor:
     def __init__(self, colour: Union[Tuple[int, int, int], str], generation_rate: int):
-        self.particles: list[Particle] = []
+        self.particles: List[Particle] = []
         self.colour = colour
         self.generation_rate = generation_rate
         self.dt = 0

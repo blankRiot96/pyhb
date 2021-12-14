@@ -15,6 +15,7 @@ def main():
     # Connecting vars
     color = [0, 0, 0]
     direction = "up"
+    state = "typing_test"
 
     # Object init
     console = TextManager(screen, punctuation=False, color=(255, 255, 255))
@@ -23,8 +24,7 @@ def main():
         init_radius=5, max_radius=40, increment=3, colour=(255, 255, 255), width=10
     )
     bg_color = (35, 0, 64)
-    settings = Settings()
-
+    settings = Settings(screen)
 
     # Time variables
     start = time.perf_counter()
@@ -38,12 +38,10 @@ def main():
 
         dt = end - start
         dt *= FPS
-
         start = time.perf_counter()
 
         # Mouse pos
         mouse_pos = pygame.mouse.get_pos()
-
 
         # Event handler
         # c_event = False
@@ -58,13 +56,18 @@ def main():
         # Dynamic color
         color, direction = return_color(color, direction, dt)
 
-        # Text console
-        console.update(events, dt)
-        console.draw()
+        if state == "typing_test":
+            # Text console
+            console.update(events, dt)
+            console.draw()
+        elif state == "settings":
+            ...
 
         # Settings
         settings.update(mouse_pos, events, dt)
         settings.draw(screen)
+
+        state = settings.state
 
         # Click effect
         expanding_circles.update(events, mouse_pos)
