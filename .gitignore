@@ -1,7 +1,6 @@
 # Test Files
 Soundpacks/
-dump.txt
-dump2.txt
+debug_output/
 *.prof
 
 # Byte-compiled / optimized / DLL files
