@@ -90,17 +90,19 @@ class Settings:
         self.circle_animation = circle_surf(2, (1, 0, 0))
         self.circle_rect = self.circle_animation.get_rect(center=(-200, -200))
 
-        self.ANIMATION_SPEED = 3
+        self.ANIMATION_SPEED = 4
+        self.dt = 0
 
     def update(self, mouse_pos: Tuple[int, int], events, dt) -> None:
+        self.dt = dt
         self.hover = self.rect.collidepoint(mouse_pos)
         for event in events:
             if self.hover:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.start_animation = True
-                    radius = self.screen.get_width() + self.screen.get_height() // 2
+                    radius = self.screen.get_width() + self.screen.get_height() 
                     self.circle_animation = circle_surf(radius, (1, 0, 0))
-                    self.circle_rect = self.circle_animation.get_rect(center=(-200, -200))
+                    self.circle_rect = self.circle_animation.get_rect(bottomright=(0, 0))
                     self.expanding = True
 
         if self.hover:
@@ -112,20 +114,32 @@ class Settings:
         if self.start_animation:
             x, y = self.screen.get_rect().center
             if self.expanding:
-                if self.circle_rect.centerx < x and self.circle_rect.centery < y:
-                    self.circle_rect.centerx += self.ANIMATION_SPEED
-                    self.circle_rect.centery += self.ANIMATION_SPEED
+                if self.circle_rect.topleft[0] < x and self.circle_rect.topleft[1] < y:
+                    self.circle_rect.x += self.ANIMATION_SPEED * self.dt
+                    self.circle_rect.y += self.ANIMATION_SPEED * self.dt
+
+
+                    print(self.ANIMATION_SPEED * self.dt)
+
+                    if self.ANIMATION_SPEED * self.dt == 0:
+                        with open('debug_output/dump3.txt', 'w') as f:
+                            f.write(f"""
+                            self.ANIMATION_SPEED\t={self.ANIMATION_SPEED},
+                            dt\t={dt}
+                            """)
+                        exit("debug at `if self.ANIMATION_SPEED * dt == 0`")
                 else:
+                    print('osoraku')
                     self.state = "settings"
                     self.expanding = False
             else:
-                vec_1 = pygame.Vector2(self.circle_rect.center)
-                vec_2 = pygame.Vector2(self.screen.get_rect().center)
-                if vec_1.distance_to(vec_2) < 500:
-                    self.circle_rect.centerx -= self.ANIMATION_SPEED
-                    self.circle_rect.centery -= self.ANIMATION_SPEED
+                print(self.ANIMATION_SPEED * self.dt)
+                if self.circle_rect.topleft[0] < x and self.circle_rect.topleft[1] < y:
+                    self.circle_rect.x -= self.ANIMATION_SPEED * self.dt
+                    self.circle_rect.y -= self.ANIMATION_SPEED * self.dt
                 else:
                     self.start_animation = False
+                    print('END IS REACHED?')
 
     def draw(self, screen: pygame.Surface) -> None:
         screen.blit(self.icon, self.rect)
