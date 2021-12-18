@@ -18,7 +18,7 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
-    install_requires=['pygame', 'keyboard', 'requests'],
+    install_requires=['pygame', 'keyboard', 'requests', 'click'],
     python_requires='>=3.7',
     keywords=["aesthetic", "typing test"],
     classifiers=[

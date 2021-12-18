@@ -1,78 +1,69 @@
+import click
 import os
-import sys
 import webbrowser
-from pyhb.table import list_info
+import random
+from colorama import Fore, Style, Back
+from pyhb.utils import output
+
+
+COLORS = [
+	Fore.BLACK,
+	Fore.BLUE,
+	Fore.CYAN,
+	Fore.GREEN,
+	Fore.LIGHTBLACK_EX,
+	Fore.LIGHTBLUE_EX,
+	Fore.LIGHTCYAN_EX,
+	Fore.LIGHTGREEN_EX,
+	Fore.LIGHTMAGENTA_EX,
+	Fore.LIGHTRED_EX,
+	Fore.LIGHTYELLOW_EX,
+	Fore.MAGENTA,
+	Fore.RED,
+	Fore.RESET,
+	Fore.YELLOW
+]
+
+
+@click.group()
+@click.option('--play', is_flag=True, flag_value="", help="Lofi music to be played")
+@click.option('--typetest', flag_value="", help="Start an aesthetic typing test application")
+def cli():
+	pass
+
+
+@cli.command()
+def play_song(play):
+	global COLORS
+	songs = {
+	    "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
+	    "biscuit": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY",
+	    "melancholy": "https://www.youtube.com/watch?v=RxglYGHuqFc",
+	    "street lights": "https://www.youtube.com/watch?v=FqXwkqfVGvA",
+	    "memory lane": "https://www.youtube.com/watch?v=6LXTuNDB160",
+	    "jiro dreams": "https://www.youtube.com/watch?v=sEYSpROMY5A",
+	    "*": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD",
+	}
+
+	if play:
+		webbrowser.open(songs[play])
+	else:
+		for index, song in enumerate(songs):
+			color = random.choice(COLORS)
+			output(color, f"[{index + 1}] {song}")
+
+		try:
+			promt = int(input('Choose a song number: '))
+			webbrowser.open(list(songs.values())[promt - 1])
+		except (ValueError, IndexError):
+			output(Fore.RED, "Invalid entry.")
+
+
+@cli.command()
+def type_test():
+	from pyhb.typing_tester import main 
+	main()
 
 
 def main():
-    # Path to which 'pyhb' is installed
-    user_path = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
-
-    # Check if soundpacks are installed
-    try:
-        soundpacks = os.listdir(user_path + "/Soundpacks")
-        soundpacks.remove("config.json")
-    except FileNotFoundError:
-        soundpacks = []
-
-    commands = {
-        "play": {
-            "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
-            "biscuit": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY",
-            "melancholy": "https://www.youtube.com/watch?v=RxglYGHuqFc",
-            "street lights": "https://www.youtube.com/watch?v=FqXwkqfVGvA",
-            "memory lane": "https://www.youtube.com/watch?v=6LXTuNDB160",
-            "jiro dreams": "https://www.youtube.com/watch?v=sEYSpROMY5A",
-            "*": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD",
-        },
-        "start": ["typetest"],
-        "soundpacks": soundpacks,
-        "install": ["soundpacks"],
-    }
-
-    def try_index(index: int) -> str:
-        try:
-            value = sys.argv[index]
-        except IndexError:
-            value = None
-
-        return value
-
-    flag = try_index(1)
-    optional_arg = try_index(2)
-
-    if flag == "play":
-        if optional_arg in commands[flag]:
-            webbrowser.open(commands[flag][optional_arg])
-        else:
-            print(f"Invalid argument for the '{flag}' flag")
-            list_info(list(commands["play"].keys()), list(commands["play"].values()))
-    elif flag == "start":
-        if optional_arg in commands[flag]:
-            if optional_arg == "typetest":
-                from pyhb.typing_tester import main
-
-                main()
-        else:
-            print(f"Invalid argument for the '{flag}' flag")
-            list_info(commands[flag])
-    elif flag == "install":
-        if optional_arg in commands[flag]:
-            if optional_arg == "soundpacks":
-                from pyhb.install_soundpacks import install
-
-                install(os.path.dirname(os.path.realpath(__file__)))
-            else:
-                print(f"Invalid argument for the '{flag} flag'")
-                list_info(commands[flag])
-    else:
-        from pyhb.keyboard_sound_effects import main
-
-        if flag not in commands["soundpacks"]:
-            print("Unavailable soundpack")
-            list_info(commands["soundpacks"])
-        else:
-            try:
-                main(flag)
-            except KeyboardInterrupt:
-                print("You have closed the program.")
+	cli()
