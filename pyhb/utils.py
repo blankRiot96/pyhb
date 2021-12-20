@@ -1,11 +1,14 @@
 import click
+import logging
 import random
 import os
-from colorama import Style
+from colorama import Fore, Style
 from typing import List, Union
 
 
+# Path to which 'pyhb' is installed
 user_path = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
+
 
 def output(color, msg) -> None:
 	click.echo(color + msg + Style.RESET_ALL)
@@ -30,8 +33,13 @@ def list_options(options: Union[List[str], dict], colorize: bool=False) -> None:
 		    Fore.RESET,
 		    Fore.YELLOW
 		]
-		color = random.choice(colors)
 
 
 	for index, option in enumerate(options):
+		if colorize:
+			color = random.choice(colors)
 		output(color, f"[{index + 1}] {option}")
+
+
+
+

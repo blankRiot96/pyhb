@@ -55,7 +55,7 @@ def play(song: Optional[str]=None):
     if song:
         webbrowser.open(songs[song])
     else:
-        list_options(songs, colorize=True)
+        list_options(songs, colorize=False)
 
         try:
             promt = int(input('Choose a song number: '))
