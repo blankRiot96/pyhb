@@ -1,6 +1,22 @@
 import pygame
+import logging
+import math
 import os
 from typing import Tuple
+
+
+'''
+Logging setup:-
+'''
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.NOTSET)  # setLevel to `NOTSET` before making a commit
+
+file_handler = logging.FileHandler('debug_output/logger.txt')
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
 
 
 def circle_surf(radius, color) -> pygame.Surface:
@@ -38,10 +54,6 @@ class Label:
         )
 
     def draw(self, screen: pygame.Surface):
-        # Use this to draw the button on the screen
-        # As a placeholder, I draw its content, but it may be more complex
-        # when you do it. Maybe you use images, maybe likely some background,
-        # maybe some border and even shadows ?
         if self.colour:
             if self.shape == "rectangle":
                 pygame.draw.rect(
@@ -88,10 +100,13 @@ class Settings:
         self.hover = False
 
         self.circle_animation = circle_surf(2, (1, 0, 0))
-        self.circle_rect = self.circle_animation.get_rect(center=(-200, -200))
+        self.circle_rect = self.circle_animation.get_rect(center=(-1000, -1000))
+        self.pos = self.circle_rect.topleft
 
-        self.ANIMATION_SPEED = 4
+        self.ANIMATION_SPEED = 7
         self.dt = 0
+
+        self.transition_distance = 0
 
     def update(self, mouse_pos: Tuple[int, int], events, dt) -> None:
         self.dt = dt
@@ -100,9 +115,10 @@ class Settings:
             if self.hover:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.start_animation = True
-                    radius = self.screen.get_width() + self.screen.get_height() 
+                    radius = self.screen.get_width() 
                     self.circle_animation = circle_surf(radius, (1, 0, 0))
-                    self.circle_rect = self.circle_animation.get_rect(bottomright=(0, 0))
+                    self.circle_rect = self.circle_animation.get_rect(center=(-400, -400))
+                    self.pos = list(self.circle_rect.topleft)
                     self.expanding = True
 
         if self.hover:
@@ -112,34 +128,33 @@ class Settings:
             self.icon = pygame.transform.scale(self.img, (40, 40))
 
         if self.start_animation:
-            x, y = self.screen.get_rect().center
+            increment = self.ANIMATION_SPEED * self.dt 
+            increment_sqrd = increment ** 2
             if self.expanding:
-                if self.circle_rect.topleft[0] < x and self.circle_rect.topleft[1] < y:
-                    self.circle_rect.x += self.ANIMATION_SPEED * self.dt
-                    self.circle_rect.y += self.ANIMATION_SPEED * self.dt
+                if self.transition_distance <= self.screen.get_width():
+                    self.pos[0] += increment
+                    self.pos[1] += increment
 
-
-                    print(self.ANIMATION_SPEED * self.dt)
+                    self.transition_distance += math.sqrt(increment_sqrd + increment_sqrd)
 
                     if self.ANIMATION_SPEED * self.dt == 0:
-                        with open('debug_output/dump3.txt', 'w') as f:
-                            f.write(f"""
+                        logger.error(f"""
                             self.ANIMATION_SPEED\t={self.ANIMATION_SPEED},
                             dt\t={dt}
                             """)
                         exit("debug at `if self.ANIMATION_SPEED * dt == 0`")
                 else:
-                    print('osoraku')
                     self.state = "settings"
                     self.expanding = False
             else:
-                print(self.ANIMATION_SPEED * self.dt)
-                if self.circle_rect.topleft[0] < x and self.circle_rect.topleft[1] < y:
-                    self.circle_rect.x -= self.ANIMATION_SPEED * self.dt
-                    self.circle_rect.y -= self.ANIMATION_SPEED * self.dt
+                if self.transition_distance >= 0:
+                    self.pos[0] -= increment
+                    self.pos[1] -= increment
+                    
+                    self.transition_distance -= math.sqrt(increment_sqrd + increment_sqrd)
                 else:
                     self.start_animation = False
-                    print('END IS REACHED?')
+                    logger.info('END IS REACHED?')
 
     def draw(self, screen: pygame.Surface) -> None:
         screen.blit(self.icon, self.rect)
@@ -149,4 +164,4 @@ class Settings:
             pygame.draw.circle(screen, "black", self.rect.center, self.radius)
 
         if self.start_animation:
-            screen.blit(self.circle_animation, self.circle_rect)
+            screen.blit(self.circle_animation, self.pos)
