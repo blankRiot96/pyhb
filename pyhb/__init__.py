@@ -7,14 +7,17 @@ from pyhb.utils import list_options, user_path
 from typing import Optional
 import sys
 
+
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
 def main():
     pass
 
 
 @main.command(help="Play keyboard sound effects")
-@click.option('--soundpack', '-s', is_flag=False, flag_value="", help="Choose a soundpack")
-def start(soundpack: Optional[str]=None):
+@click.option(
+    "--soundpack", "-s", is_flag=False, flag_value="", help="Choose a soundpack"
+)
+def start(soundpack: Optional[str] = None):
     from pyhb.keyboard_sound_effects import main
 
     if soundpack:
@@ -23,7 +26,7 @@ def start(soundpack: Optional[str]=None):
         soundpacks = os.listdir(user_path + "/Soundpacks")
         soundpacks.remove("config.json")
 
-        list_options(soundpacks)
+        list_options(soundpacks, colorize=True)
 
         promt = int(input("Choose a soundpack: "))
         soundpack = soundpacks[promt - 1]
@@ -32,15 +35,16 @@ def start(soundpack: Optional[str]=None):
 
 
 @main.command(help="Install Soundpacks for pyhb")
-@click.option('--soundpacks', flag_value="")
+@click.option("--soundpacks", flag_value="")
 def install(soundpacks: str):
     from pyhb.install_soundpacks import install
+
     install(user_path)
 
 
 @main.command(help="Lofi music to be played")
-@click.option('--song', '-s', is_flag=False, flag_value="", help="Choose a song")
-def play(song: Optional[str]=None):
+@click.option("--song", "-s", is_flag=False, flag_value="", help="Choose a song")
+def play(song: Optional[str] = None):
     global COLORS
     songs = {
         "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
@@ -55,10 +59,10 @@ def play(song: Optional[str]=None):
     if song:
         webbrowser.open(songs[song])
     else:
-        list_options(songs, colorize=False)
+        list_options(songs, colorize=True)
 
         try:
-            promt = int(input('Choose a song number: '))
+            promt = int(input("Choose a song number: "))
             webbrowser.open(list(songs.values())[promt - 1])
         except (ValueError, IndexError):
             output(Fore.RED, "Invalid entry.")
@@ -67,8 +71,6 @@ def play(song: Optional[str]=None):
 @main.command(help="Start an aesthetic typing test application")
 # @click.option('--typetest', flag_value="", help="Start an aesthetic typing test application")
 def typetest():
-    from pyhb.typing_tester import main 
+    from pyhb.typing_tester import main
+
     main()
-
-
-

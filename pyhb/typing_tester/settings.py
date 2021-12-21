@@ -1,22 +1,24 @@
 import pygame
 import logging
+import json
 import math
 import os
 from typing import Tuple
+from pyhb.typing_tester.widgets import Label
+from pyhb.typing_tester.themes import Theme
 
 
-'''
+"""
 Logging setup:-
-'''
+"""
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.NOTSET)  # setLevel to `NOTSET` before making a commit
+logger.setLevel(logging.INFO)  # setLevel to `NOTSET` before making a commit
 
-file_handler = logging.FileHandler('debug_output/logger.txt')
-formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+file_handler = logging.FileHandler("debug_output/logger.txt")
+formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(message)s")
 
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
-
 
 
 def circle_surf(radius, color) -> pygame.Surface:
@@ -27,60 +29,16 @@ def circle_surf(radius, color) -> pygame.Surface:
     return surf
 
 
-class Label:
-    def __init__(
-        self,
-        position,
-        size,
-        content: str,
-        colour=None,
-        border_colour=None,
-        txt_colour=(255, 255, 255),
-        shape="rectangle",
-    ):
-        self.position = position
-        self.size = size
-        self.rect = pygame.Rect(self.position, self.size)
-        self.surface = pygame.Surface(self.size)
-        # self.surface.set_colorkey((0, 0, 0))
-        self.content = content
-
-        self.colour = colour or None
-        self.border_colour = border_colour or None
-        self.txt_colour = txt_colour
-        self.shape = shape
-        self.t = pygame.font.SysFont("arial", size=self.rect.size[0] // 8).render(
-            content, True, self.txt_colour
-        )
-
-    def draw(self, screen: pygame.Surface):
-        if self.colour:
-            if self.shape == "rectangle":
-                pygame.draw.rect(
-                    self.surface, self.colour, self.surface.get_rect(), border_radius=1, width=5
-                )
-        if self.border_colour:
-            pygame.draw.rect(
-                self.surface,
-                self.border_colour,
-                self.surface.get_rect(),
-                border_radius=4,
-                width=1,
-            )
-
-        screen.blit(self.surface, self.rect)
-        screen.blit(self.t, self.t.get_rect(center=self.rect.center))
-
-
 class Settings:
     def __init__(self, screen: pygame.Surface) -> None:
         self.screen = screen
+        self.theme = Theme("lavender")
 
         # Path to which 'pyhb' is installed
         self.user_path = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
         # print(self.user_path + '/settings_icon.png')
         self.img = pygame.image.load(
-            self.user_path + "/settings_icon.png"
+            self.user_path + "/assets/settings_icon.png"
         ).convert_alpha()
         self.icon = pygame.transform.scale(self.img, (40, 40))
         self.rect = self.icon.get_bounding_rect()
@@ -92,32 +50,62 @@ class Settings:
         self.expanding = False
         self.label = Label(
             self.rect.center,
-            (40*2.5, 10*2.5),
+            (40 * 2.5, 10 * 2.5),
             "settings",
             colour="black",
             border_colour="white",
         )
         self.hover = False
 
-        self.circle_animation = circle_surf(2, (1, 0, 0))
+        # Animation variables
+        self.transition_color = self.theme.settings_transition_color
+        self.circle_animation = circle_surf(2, self.transition_color)
         self.circle_rect = self.circle_animation.get_rect(center=(-1000, -1000))
         self.pos = self.circle_rect.topleft
-
         self.ANIMATION_SPEED = 7
         self.dt = 0
-
         self.transition_distance = 0
 
+        if os.path.exists(self.user_path + "/preferences.json"):
+            print('Triggered?')
+            with open(self.user_path + "/preferences.json") as f:
+                self.preferences = json.load(f)
+        else:
+            self.preferences = {
+                "punctuation": False,
+                "theme": self.theme._id,
+                "duration": 30,
+            }
+            with open(self.user_path + "/preferences.json", "w") as f:
+                json.dump(self.preferences, f, indent=2)
+
     def update(self, mouse_pos: Tuple[int, int], events, dt) -> None:
+        """
+        :param mouse_pos: Position of the mouse
+        :param events: -> pygame.event.get()
+        :param dt: Amount of time taken to complete last frame * FPS
+        :return: None
+
+        Updates the Settings class, and deals with position and data update related matter
+        """
+
+        # TODO: Add main functionality of a typing test application
+        # 1) Gross WPM -> Number of words typed * (60/Duration)
+        # 2) Net WPM -> Number of correct words typed * (60/Duration)
+        # 3) Accuracy -> (Net WPM / Gross WPM ) * 100
+        # Display All after `show_results == True`
+
         self.dt = dt
         self.hover = self.rect.collidepoint(mouse_pos)
         for event in events:
             if self.hover:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.start_animation = True
-                    radius = self.screen.get_width() 
-                    self.circle_animation = circle_surf(radius, (1, 0, 0))
-                    self.circle_rect = self.circle_animation.get_rect(center=(-400, -400))
+                    radius = self.screen.get_width()
+                    self.circle_animation = circle_surf(radius, self.transition_color)
+                    self.circle_rect = self.circle_animation.get_rect(
+                        center=(-400, -400)
+                    )
                     self.pos = list(self.circle_rect.topleft)
                     self.expanding = True
 
@@ -128,20 +116,24 @@ class Settings:
             self.icon = pygame.transform.scale(self.img, (40, 40))
 
         if self.start_animation:
-            increment = self.ANIMATION_SPEED * self.dt 
+            increment = self.ANIMATION_SPEED * self.dt
             increment_sqrd = increment ** 2
             if self.expanding:
                 if self.transition_distance <= self.screen.get_width():
                     self.pos[0] += increment
                     self.pos[1] += increment
 
-                    self.transition_distance += math.sqrt(increment_sqrd + increment_sqrd)
+                    self.transition_distance += math.sqrt(
+                        increment_sqrd + increment_sqrd
+                    )
 
                     if self.ANIMATION_SPEED * self.dt == 0:
-                        logger.error(f"""
+                        logger.error(
+                            f"""
                             self.ANIMATION_SPEED\t={self.ANIMATION_SPEED},
                             dt\t={dt}
-                            """)
+                            """
+                        )
                         exit("debug at `if self.ANIMATION_SPEED * dt == 0`")
                 else:
                     self.state = "settings"
@@ -150,13 +142,30 @@ class Settings:
                 if self.transition_distance >= 0:
                     self.pos[0] -= increment
                     self.pos[1] -= increment
-                    
-                    self.transition_distance -= math.sqrt(increment_sqrd + increment_sqrd)
+
+                    self.transition_distance -= math.sqrt(
+                        increment_sqrd + increment_sqrd
+                    )
                 else:
                     self.start_animation = False
-                    logger.info('END IS REACHED?')
+                    logger.info("END IS REACHED?")
+
+    def save_preferences(self) -> None:
+        """
+        :return: None
+
+        Save the user preferences
+        """
+        with open(self.user_path + "/preferences.json", "w") as f:
+            json.dump(self.preferences, f, indent=2)
 
     def draw(self, screen: pygame.Surface) -> None:
+        """
+        :param screen: Screen to draw on.
+        :return: None
+
+        Deals with rendering the settings related widgets and graphics
+        """
         screen.blit(self.icon, self.rect)
 
         if self.hover:
@@ -165,3 +174,7 @@ class Settings:
 
         if self.start_animation:
             screen.blit(self.circle_animation, self.pos)
+
+        # TODO: Render settings
+        if self.state == "settings":
+            ...

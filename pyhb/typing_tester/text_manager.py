@@ -1,16 +1,23 @@
 import pygame
 import random
-from typing import List, Tuple, Union
+from typing import List, Tuple
+from pyhb.typing_tester.display import FPS
 from pyhb.typing_tester.passage_generator import get_sentences, get_words
 from pyhb.typing_tester.words import words
 
 
 class TextManager:
     def __init__(
-        self, screen: pygame.Surface, punctuation: bool, color: Tuple[int, int, int]
+        self,
+        screen: pygame.Surface,
+        punctuation: bool,
+        color: Tuple[int, int, int],
+        duration: int,
     ):
         self.font = pygame.font.SysFont("leelawadee", 24)
         self.color = color
+        self.font_color = [255, 255, 255]
+        self.font_error_color = [255, 0, 0]
         self.screen = screen
 
         # User input
@@ -24,8 +31,12 @@ class TextManager:
         self.start_stack = False
         self.punctuation = punctuation
         self.correct = True
+        self.start_test = False
+        self.show_results = False
 
         # Count variables
+        self.time_left = duration
+        self.time_passed = 0
         self.dt = 0
         self.cursor_count = 0
         self.delete_count = 0
@@ -45,9 +56,12 @@ class TextManager:
         )
         self.surf_rect = self.surf.get_rect()
         self.surf.set_colorkey((0, 0, 0))
+        self.time_txt = self.font.render(str(self.time_left), True, self.font_color)
 
+        # Create passage & End __init__
         self.passage: List[str] = []
         self.append_passage(6)
+        # -- END --
 
     def generate_valid_lines(self, n: int = None, clington=None) -> List[str]:
         """
@@ -85,14 +99,21 @@ class TextManager:
         self.passage += self.generate_valid_lines(n)
 
     def update(self, events, dt) -> None:
-        # self.passage = self.generate_valid_lines(clington=self.passage)
         self.dt = dt
 
-        # index = len(self.user_passage[self.current_line])
-        # if self.user_passage[self.current_line] == self.passage[self.current_line][:index]:
-        #     self.correct = True
-        # else:
-        #     self.correct = False
+        # Handle timer
+        if self.start_test:
+            self.time_passed += dt / FPS
+            if self.time_passed >= 1:
+                self.time_left -= 1
+                self.time_passed = 0
+                self.time_txt = self.font.render(
+                    str(self.time_left), True, self.font_color
+                )
+
+        if self.time_left == 0:
+            self.show_results = True
+            self.start_test = False
 
         # Handle count variables
         self.cursor_count += self.dt
@@ -125,6 +146,7 @@ class TextManager:
                             self.passage[self.current_line]
                         ):
                             self.user_passage[self.current_line] += event.unicode
+                            self.start_test = True
                         else:
                             print("DEBUG")
                     except ValueError:
@@ -170,11 +192,13 @@ class TextManager:
 
         self.delete = False
 
-    def draw(self) -> None:
-        self.surf.fill(0)
+    def draw_text(self):
         screen_center = self.screen.get_rect().center
-        screen_topleft = self.screen.get_rect().topleft
         positions = []
+
+        # Timer
+        # self.time_txt_rect = self.time_txt.get_rect(center=(screen_center[0], screen_center[0] - 100))
+        self.screen.blit(self.time_txt, (screen_center[0], screen_center[1] - 200))
 
         # Shadow text
         for row, line in enumerate(self.passage):
@@ -187,9 +211,9 @@ class TextManager:
                 ):
                     try:
                         if self.user_passage[row][column] == self.passage[row][column]:
-                            color = "white"
+                            color = self.font_color
                         else:
-                            color = "red"
+                            color = self.font_error_color
                     except IndexError as err:
                         print(err)
                         print(185)
@@ -204,7 +228,7 @@ class TextManager:
                             f.write("\n".join(self.passage))
                         exit()
                 else:
-                    color = "white"
+                    color = self.font_color
 
                 text = self.font.render(char, True, color)
                 text.set_alpha(150)
@@ -234,16 +258,16 @@ class TextManager:
             for column, char in enumerate(line):
                 curt = False
                 if (row, column) == current_pos:
-                    text = self.font.render(char + self.cursor, True, "white")
+                    text = self.font.render(char + self.cursor, True, self.font_color)
                     curt = True
                 else:
-                    text = self.font.render(char, True, "white")
+                    text = self.font.render(char, True, self.font_color)
 
                 try:
                     if self.user_passage[row][column] == self.passage[row][column]:
                         self.surf.blit(text, positions[row][column])
                     elif curt:
-                        cursor = self.font.render(self.cursor, True, "white")
+                        cursor = self.font.render(self.cursor, True, self.font_color)
                         pos = (
                             positions[row][column][0] + self.FONT_WIDTH,
                             positions[row][column][1],
@@ -264,25 +288,11 @@ class TextManager:
 
         self.surf_rect = self.surf.get_rect(center=screen_center)
         self.screen.blit(self.surf, self.surf_rect)
-        # # Shadow text
-        # for index, line in enumerate(self.passage):
-        #     text = self.font.render(line, True, 'white')
-        #     text.set_alpha(150)
-        #     text_rect = text.get_rect(center=self.screen.get_rect().center)
-        #     pos = (text_rect.topleft[0], text_rect.topleft[1] + index * text_rect.height)
 
-        #     positions.append(pos)
+    def draw(self) -> None:
+        self.surf.fill((0, 0, 0))
 
-        #     self.screen.blit(text, pos)
-
-        # # User text
-        # for index, line in enumerate(self.user_passage):
-        #     if index == self.current_line:
-        #         line += self.cursor
-
-        #     compliment = len(self.passage[index]) - len(self.user_passage[index])
-        #     buffer = " "*compliment
-        #     line += buffer
-        #     text = self.font.render(line, True, 'white')
-
-        #     self.screen.blit(text, positions[index])
+        if self.show_results:
+            ...
+        else:
+            self.draw_text()
