@@ -1,11 +1,10 @@
 words = """
+a
 treat
 flee
 draw
 trade
 driver
-nut
-wet
 else
 recall
 along
@@ -53,7 +52,6 @@ wish
 brand
 scream
 remote
-n't
 lady
 rather
 at
@@ -72,7 +70,7 @@ place
 aid
 ready
 lip
-French
+french
 truly
 oppose
 exact
@@ -85,7 +83,6 @@ craft
 permit
 bank
 priest
-gay
 look
 sister
 tent
@@ -166,7 +163,6 @@ hell
 lab
 dead
 pop
-PM
 to
 love
 fair
@@ -248,11 +244,10 @@ cash
 more
 fan
 grand
-Jewish
+jewish
 report
 law
 cop
-Mrs
 room
 margin
 past
@@ -278,7 +273,7 @@ fourth
 target
 in
 yellow
-Asian
+asian
 meat
 block
 victim
@@ -321,7 +316,6 @@ light
 coffee
 public
 lack
-CEO
 fine
 agent
 theme
@@ -549,7 +543,6 @@ cable
 risk
 result
 enter
-TV
 close
 minor
 whole
@@ -562,7 +555,6 @@ size
 sell
 aspect
 being
-shut
 peak
 get
 waste
@@ -591,11 +583,9 @@ beauty
 deck
 wait
 find
-threat
 follow
 online
 me
-swear
 bet
 full
 kid
@@ -605,7 +595,6 @@ lots
 forth
 itself
 gather
-sexual
 recipe
 button
 speed
@@ -654,7 +643,6 @@ stop
 single
 slave
 fifty
-vs
 real
 prompt
 ah
@@ -693,10 +681,10 @@ pull
 cry
 book
 deny
-United
+united
 out
 number
 depict
 nation
 first
-""".lower()
+"""

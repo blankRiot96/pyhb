@@ -1,7 +1,4 @@
-import pygame
 import time
-
-from pygame import mouse
 from pyhb.typing_tester.display import *
 from pyhb.typing_tester.settings import Settings
 from pyhb.typing_tester.text_manager import TextManager
@@ -12,19 +9,28 @@ from pyhb.typing_tester.settings import Settings
 
 
 def main():
+    settings = Settings(screen)
+
     # Connecting vars
     color = [0, 0, 0]
+    bg_color = settings.theme.bg_color
     direction = "up"
     state = "typing_test"
 
     # Object init
-    console = TextManager(screen, punctuation=False, color=(255, 255, 255))
+    console = TextManager(
+        screen,
+        punctuation=settings.preferences["punctuation"],
+        color=(255, 255, 255),
+        duration=settings.preferences["duration"],
+    )
     cursor = Cursor(color, 2)
     expanding_circles = ExpandingCircles(
         init_radius=5, max_radius=40, increment=3, colour=(255, 255, 255), width=10
     )
-    bg_color = (35, 0, 64)
-    settings = Settings(screen)
+
+    # Set theme
+    settings.theme.set_theme(settings, console)
 
     # Time variables
     start = time.perf_counter()
