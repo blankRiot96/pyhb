@@ -115,7 +115,7 @@ class TextManager:
             if word == correct_word:
                 num_correct_words += 1
 
-        wpm = num_correct_words * (60 / self.DURATION)
+        wpm = int(num_correct_words * (60 / self.DURATION))
         accuracy = round((self.correct_characters_typed / self.characters_typed) * 100, 2)
 
         return wpm, accuracy
@@ -132,11 +132,6 @@ class TextManager:
         Updates the TextManager object
         """
         self.dt = dt
-
-        # TODO: Add main functionality of a typing test application
-        # 1) WPM -> Number of correct words typed * (60 / Duration)
-        # 2) Accuracy -> (Number of correct characters typed / Number of total characters typed) * 100
-        # Display All after `show_results == True`
 
         # Handle timer
         if self.start_test:
@@ -337,10 +332,20 @@ class TextManager:
         self.surf_rect = self.surf.get_rect(center=screen_center)
         self.screen.blit(self.surf, self.surf_rect)
 
+    # TODO: Draw the results in a polished manner
+    # Make an increasing number animation and completing arc animation
     def draw_results(self) -> None:
+        """
+
+        :return: None
+
+        Draws the results at the end of the type test
+        Mainly WPM and Accuracy
+        """
         self.results_surf.fill((0, 0, 0))
         screen_center = self.screen.get_rect().center
 
+        # TODO: Crop self.results_surf accordingly with `pygame.transform.crop`
         if self.calc_once:
             self.wpm, self.accuracy = self.calculate_results()
             self.wpm_surf = self.font.render("WPM: " + str(self.wpm), True, self.font_color)
