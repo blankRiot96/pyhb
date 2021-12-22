@@ -4,7 +4,7 @@ import json
 import math
 import os
 from typing import Tuple
-from pyhb.typing_tester.widgets import Label
+from pyhb.typing_tester.widgets import Label, Toggle
 from pyhb.typing_tester.themes import Theme
 
 
@@ -43,11 +43,11 @@ class Settings:
         self.icon = pygame.transform.scale(self.img, (40, 40))
         self.rect = self.icon.get_bounding_rect()
         self.rect.center = (30, 30)
+        self.font = pygame.font.SysFont("arialrounded", 30)
 
-        self.state = "typing_test"
-        self.start_animation = False
         self.radius = 1
-        self.expanding = False
+
+        # Settings Widgets
         self.label = Label(
             self.rect.center,
             (40 * 2.5, 10 * 2.5),
@@ -55,6 +55,15 @@ class Settings:
             colour="black",
             border_colour="white",
         )
+        self.punctuation_toggle = Toggle((60, 20))
+
+        # Surfaces
+        self.punctuation_txt = self.font.render("Punctuation", True, "white")
+
+        # Flags
+        self.state = "typing_test"
+        self.start_animation = False
+        self.expanding = False
         self.hover = False
 
         # Animation variables
@@ -144,6 +153,9 @@ class Settings:
                     self.start_animation = False
                     logger.info("END IS REACHED?")
 
+        if self.state == "settings":
+            self.punctuation_toggle.update(dt)
+
     def save_preferences(self) -> None:
         """
         :return: None
@@ -160,6 +172,8 @@ class Settings:
 
         Deals with rendering the settings related widgets and graphics
         """
+        s_rect = screen.get_rect()
+
         screen.blit(self.icon, self.rect)
 
         if self.hover:
@@ -170,5 +184,8 @@ class Settings:
             screen.blit(self.circle_animation, self.pos)
 
         # TODO: Render settings
-        if self.state == "settings":
-            ...
+        if self.state == "settings" and not self.start_animation:
+            diff = 75
+            punctuation_rect = self.punctuation_txt.get_rect(center=(s_rect.centerx - diff, s_rect.centery - 50))
+            screen.blit(self.punctuation_txt, punctuation_rect)
+            self.punctuation_toggle.draw(screen, (s_rect.centerx + diff, punctuation_rect.centery - 5))
