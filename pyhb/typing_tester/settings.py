@@ -67,9 +67,9 @@ class Settings:
         self.transition_distance = 0
 
         if os.path.exists(self.user_path + "/preferences.json"):
-            print('Triggered?')
             with open(self.user_path + "/preferences.json") as f:
                 self.preferences = json.load(f)
+            self.theme = Theme(self.preferences["theme"])
         else:
             self.preferences = {
                 "punctuation": False,
@@ -88,12 +88,6 @@ class Settings:
 
         Updates the Settings class, and deals with position and data update related matter
         """
-
-        # TODO: Add main functionality of a typing test application
-        # 1) Gross WPM -> Number of words typed * (60/Duration)
-        # 2) Net WPM -> Number of correct words typed * (60/Duration)
-        # 3) Accuracy -> (Net WPM / Gross WPM ) * 100
-        # Display All after `show_results == True`
 
         self.dt = dt
         self.hover = self.rect.collidepoint(mouse_pos)

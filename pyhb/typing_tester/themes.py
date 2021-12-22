@@ -46,3 +46,4 @@ class Theme:
         if self.settings_icon_color != (0, 0, 0):
             arr = pygame.PixelArray(settings.img)
             arr.replace((0, 0, 0), self.settings_icon_color)
+        settings.transition_color = self.settings_transition_color
