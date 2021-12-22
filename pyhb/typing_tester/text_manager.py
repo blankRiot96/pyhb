@@ -23,8 +23,9 @@ class TextManager:
         # User input
         self.user_passage: List[str] = [""]
         self.current_line = 0
-        self.current_indeces = {self.current_line: -1}
+        self.current_indices = {self.current_line: -1}
         self.cursor = "|"
+        self.wpm, self.accuracy = 0, 0
 
         # Flags
         self.delete = True
@@ -33,6 +34,7 @@ class TextManager:
         self.correct = True
         self.start_test = False
         self.show_results = False
+        self.calc_once = True
 
         # Count variables
         self.time_left = duration
@@ -41,9 +43,13 @@ class TextManager:
         self.cursor_count = 0
         self.delete_count = 0
         self.stack = 0
+        self.characters_typed = 0
+        self.correct_characters_typed = 0
 
         # Constant config variables
         self.FONT_WIDTH, self.FONT_HEIGHT = 13, 25
+        self.DURATION = duration
+        self.FORBIDDEN_CHARACTERS = (pygame.K_BACKSPACE, pygame.K_RETURN, pygame.KMOD_SHIFT)
         self.MAX_LINE_LENGTH = 40
         self.CURSOR_COOLDOWN = 50
         self.DELETE_COOLDOWN = 6
@@ -57,6 +63,10 @@ class TextManager:
         self.surf_rect = self.surf.get_rect()
         self.surf.set_colorkey((0, 0, 0))
         self.time_txt = self.font.render(str(self.time_left), True, self.font_color)
+        self.wpm_surf = self.font.render(str(self.wpm), True, self.font_color)
+        self.accuracy_surf = self.font.render(str(self.accuracy), True, self.font_color)
+        self.results_surf = pygame.Surface((200, 200))
+        self.results_surf.set_colorkey((0, 0, 0))
 
         # Create passage & End __init__
         self.passage: List[str] = []
@@ -95,11 +105,38 @@ class TextManager:
 
         return lines.split("\n")
 
+    def calculate_results(self) -> (int, float):
+        """
+
+        :return: WPM, Accuracy
+        """
+        num_correct_words = 0
+        for word, correct_word in zip(" ".join(self.user_passage).split(), " ".join(self.user_passage).split()):
+            if word == correct_word:
+                num_correct_words += 1
+
+        wpm = num_correct_words * (60 / self.DURATION)
+        accuracy = round((self.correct_characters_typed / self.characters_typed) * 100, 2)
+
+        return wpm, accuracy
+
     def append_passage(self, n) -> None:
         self.passage += self.generate_valid_lines(n)
 
     def update(self, events, dt) -> None:
+        """
+        :param events: -> pygame.event.get()
+        :param dt: Amount of time taken to complete last frame * FPS
+        :return: None
+
+        Updates the TextManager object
+        """
         self.dt = dt
+
+        # TODO: Add main functionality of a typing test application
+        # 1) WPM -> Number of correct words typed * (60 / Duration)
+        # 2) Accuracy -> (Number of correct characters typed / Number of total characters typed) * 100
+        # Display All after `show_results == True`
 
         # Handle timer
         if self.start_test:
@@ -137,16 +174,21 @@ class TextManager:
                 exit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key != pygame.K_BACKSPACE:
+                if event.key not in self.FORBIDDEN_CHARACTERS:
                     self.cursor = "|"
 
-                    self.current_indeces[self.current_line] += 1
+                    self.current_indices[self.current_line] += 1
                     try:
                         if len(self.user_passage[self.current_line]) < len(
                             self.passage[self.current_line]
                         ):
                             self.user_passage[self.current_line] += event.unicode
                             self.start_test = True
+
+                            # Update Accuracy variables
+                            self.characters_typed += 1
+                            if event.unicode == self.passage[self.current_line][self.current_indices[self.current_line]]:
+                                self.correct_characters_typed += 1
                         else:
                             print("DEBUG")
                     except ValueError:
@@ -156,14 +198,14 @@ class TextManager:
                         self.user_passage[self.current_line]
                     ) >= len(self.passage[self.current_line]):
                         self.current_line += 1
-                        self.current_indeces[self.current_line] = -1
+                        self.current_indices[self.current_line] = -1
 
                         self.user_passage.append("")
-                else:
+                elif event.key == pygame.K_BACKSPACE:
                     self.user_passage[self.current_line] = self.user_passage[
                         self.current_line
                     ][:-1]
-                    self.current_indeces[self.current_line] -= 1
+                    self.current_indices[self.current_line] -= 1
 
                     if (
                         self.current_line != 0
@@ -180,7 +222,7 @@ class TextManager:
                 self.user_passage[self.current_line] = self.user_passage[
                     self.current_line
                 ][:-1]
-                self.current_indeces[self.current_line] -= 1
+                self.current_indices[self.current_line] -= 1
                 self.cursor = "|"
             elif self.current_line != 0:
                 self.current_line -= 1
@@ -192,7 +234,13 @@ class TextManager:
 
         self.delete = False
 
-    def draw_text(self):
+    def draw_text(self) -> None:
+        """
+
+        :return: None
+
+        Draws the text
+        """
         screen_center = self.screen.get_rect().center
         positions = []
 
@@ -206,7 +254,7 @@ class TextManager:
             for column, char in enumerate(line):
                 if (
                     self.current_line >= row
-                    and self.current_indeces[row] >= column
+                    and self.current_indices[row] >= column
                     and self.user_passage[row]
                 ):
                     try:
@@ -221,10 +269,10 @@ class TextManager:
                         print(len(self.user_passage[self.current_line]))
                         print(len(self.passage[self.current_line]))
 
-                        with open("dump.txt", "w") as f:
+                        with open("debug_output/dump.txt", "w") as f:
                             f.write("\n".join(self.user_passage))
 
-                        with open("dump2.txt", "w") as f:
+                        with open("debug_output/dump2.txt", "w") as f:
                             f.write("\n".join(self.passage))
                         exit()
                 else:
@@ -253,7 +301,7 @@ class TextManager:
                 self.surf.blit(text, pos)
             positions.append(stub)
 
-        current_pos = list(self.current_indeces.items())[-1]
+        current_pos = list(self.current_indices.items())[-1]
         for row, line in enumerate(self.user_passage):
             for column, char in enumerate(line):
                 curt = False
@@ -289,10 +337,35 @@ class TextManager:
         self.surf_rect = self.surf.get_rect(center=screen_center)
         self.screen.blit(self.surf, self.surf_rect)
 
+    def draw_results(self) -> None:
+        self.results_surf.fill((0, 0, 0))
+        screen_center = self.screen.get_rect().center
+
+        if self.calc_once:
+            self.wpm, self.accuracy = self.calculate_results()
+            self.wpm_surf = self.font.render("WPM: " + str(self.wpm), True, self.font_color)
+            self.accuracy_surf = self.font.render("Accuracy: " + str(self.accuracy) + "%", True, self.font_color)
+
+            self.calc_once = False
+
+        self.results_surf.blit(self.wpm_surf, (0, 0))
+        self.results_surf.blit(self.accuracy_surf, (0, self.font.get_height()))
+
+        results_surf_rect = self.results_surf.get_bounding_rect()
+        results_surf_rect.center = screen_center
+
+        self.screen.blit(self.results_surf, results_surf_rect)
+
     def draw(self) -> None:
+        """
+
+        :return: None
+
+        Handles what to draw
+        """
         self.surf.fill((0, 0, 0))
 
         if self.show_results:
-            ...
+            self.draw_results()
         else:
             self.draw_text()

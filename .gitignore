@@ -1,6 +1,5 @@
 # Test/Data Files
 Soundpacks/
-assets/
 debug_output/
 test.py
 *.prof
