@@ -3,7 +3,7 @@ import logging
 import json
 import math
 import os
-from typing import Tuple
+from typing import Tuple, Optional
 from pyhb.typing_tester.widgets import Label, Toggle
 from pyhb.typing_tester.themes import Theme
 
@@ -59,6 +59,7 @@ class Settings:
 
         # Surfaces
         self.punctuation_txt = self.font.render("Punctuation", True, "white")
+        self.results_surf: Optional[pygame.Surface] = None
 
         # Flags
         self.state = "typing_test"
@@ -194,4 +195,10 @@ class Settings:
                 screen, (s_rect.centerx + diff, punctuation_rect.centery - 7)
             )
             self.preferences["punctuation"] = self.punctuation_toggle.switch
+
+            if self.results_surf:
+                results_surf_rect = self.results_surf.get_bounding_rect()
+                results_surf_rect.center = s_rect.center
+
+                screen.blit(self.results_surf, results_surf_rect)
 

@@ -347,7 +347,7 @@ class TextManager:
 
     # TODO: Draw the results in a polished manner
     # Make an increasing number animation and completing arc animation
-    def draw_results(self) -> None:
+    def get_results(self) -> None:
         """
 
         :return: None
@@ -373,10 +373,10 @@ class TextManager:
         self.results_surf.blit(self.wpm_surf, (0, 0))
         self.results_surf.blit(self.accuracy_surf, (0, self.font.get_height()))
 
-        results_surf_rect = self.results_surf.get_bounding_rect()
-        results_surf_rect.center = screen_center
-
-        self.screen.blit(self.results_surf, results_surf_rect)
+        # results_surf_rect = self.results_surf.get_bounding_rect()
+        # results_surf_rect.center = screen_center
+        #
+        # self.screen.blit(self.results_surf, results_surf_rect)
 
     def draw(self) -> None:
         """
@@ -388,6 +388,6 @@ class TextManager:
         self.surf.fill((0, 0, 0))
 
         if self.show_results:
-            self.draw_results()
+            self.get_results()
         else:
             self.draw_text()

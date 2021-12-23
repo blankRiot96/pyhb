@@ -66,7 +66,12 @@ def main():
             # Text console
             console.update(events, dt)
             console.draw()
+
+            if console.show_results:
+                settings.state = "settings"
+                settings.results_surf = console.results_surf
         elif state == "settings":
+            # settings.results_surf = console.results_surf
             ...
 
         # Settings
