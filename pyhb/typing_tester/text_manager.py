@@ -49,7 +49,11 @@ class TextManager:
         # Constant config variables
         self.FONT_WIDTH, self.FONT_HEIGHT = 13, 25
         self.DURATION = duration
-        self.FORBIDDEN_CHARACTERS = (pygame.K_BACKSPACE, pygame.K_RETURN, pygame.KMOD_SHIFT)
+        self.FORBIDDEN_CHARACTERS = (
+            pygame.K_BACKSPACE,
+            pygame.K_RETURN,
+            pygame.KMOD_SHIFT,
+        )
         self.MAX_LINE_LENGTH = 40
         self.CURSOR_COOLDOWN = 50
         self.DELETE_COOLDOWN = 6
@@ -111,12 +115,16 @@ class TextManager:
         :return: WPM, Accuracy
         """
         num_correct_words = 0
-        for word, correct_word in zip(" ".join(self.user_passage).split(), " ".join(self.user_passage).split()):
+        for word, correct_word in zip(
+            " ".join(self.user_passage).split(), " ".join(self.user_passage).split()
+        ):
             if word == correct_word:
                 num_correct_words += 1
 
         wpm = int(num_correct_words * (60 / self.DURATION))
-        accuracy = round((self.correct_characters_typed / self.characters_typed) * 100, 2)
+        accuracy = round(
+            (self.correct_characters_typed / self.characters_typed) * 100, 2
+        )
 
         return wpm, accuracy
 
@@ -182,7 +190,12 @@ class TextManager:
 
                             # Update Accuracy variables
                             self.characters_typed += 1
-                            if event.unicode == self.passage[self.current_line][self.current_indices[self.current_line]]:
+                            if (
+                                event.unicode
+                                == self.passage[self.current_line][
+                                    self.current_indices[self.current_line]
+                                ]
+                            ):
                                 self.correct_characters_typed += 1
                         else:
                             print("DEBUG")
@@ -348,8 +361,12 @@ class TextManager:
         # TODO: Crop self.results_surf accordingly with `pygame.transform.crop`
         if self.calc_once:
             self.wpm, self.accuracy = self.calculate_results()
-            self.wpm_surf = self.font.render("WPM: " + str(self.wpm), True, self.font_color)
-            self.accuracy_surf = self.font.render("Accuracy: " + str(self.accuracy) + "%", True, self.font_color)
+            self.wpm_surf = self.font.render(
+                "WPM: " + str(self.wpm), True, self.font_color
+            )
+            self.accuracy_surf = self.font.render(
+                "Accuracy: " + str(self.accuracy) + "%", True, self.font_color
+            )
 
             self.calc_once = False
 

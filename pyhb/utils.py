@@ -38,5 +38,3 @@ def list_options(options: Union[List[str], dict], colorize: bool = False) -> Non
         if colorize:
             color = random.choice(colors)
         output(color, f"[{index + 1}] {option}")
-
-

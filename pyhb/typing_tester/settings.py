@@ -154,7 +154,7 @@ class Settings:
                     logger.info("END IS REACHED?")
 
         if self.state == "settings":
-            self.punctuation_toggle.update(dt)
+            self.punctuation_toggle.update(mouse_pos, events, dt)
 
     def save_preferences(self) -> None:
         """
@@ -186,6 +186,10 @@ class Settings:
         # TODO: Render settings
         if self.state == "settings" and not self.start_animation:
             diff = 75
-            punctuation_rect = self.punctuation_txt.get_rect(center=(s_rect.centerx - diff, s_rect.centery - 50))
+            punctuation_rect = self.punctuation_txt.get_rect(
+                center=(s_rect.centerx - diff, s_rect.centery - 100)
+            )
             screen.blit(self.punctuation_txt, punctuation_rect)
-            self.punctuation_toggle.draw(screen, (s_rect.centerx + diff, punctuation_rect.centery - 5))
+            self.punctuation_toggle.draw(
+                screen, (s_rect.centerx + diff, punctuation_rect.centery - 7)
+            )
