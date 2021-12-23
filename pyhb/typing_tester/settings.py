@@ -55,7 +55,7 @@ class Settings:
             colour="black",
             border_colour="white",
         )
-        self.punctuation_toggle = Toggle((60, 20))
+        self.punctuation_toggle = Toggle((50, 20))
 
         # Surfaces
         self.punctuation_txt = self.font.render("Punctuation", True, "white")
@@ -183,13 +183,15 @@ class Settings:
         if self.start_animation:
             screen.blit(self.circle_animation, self.pos)
 
-        # TODO: Render settings
+        # TODO: Render Themes settings
         if self.state == "settings" and not self.start_animation:
             diff = 75
             punctuation_rect = self.punctuation_txt.get_rect(
-                center=(s_rect.centerx - diff, s_rect.centery - 100)
+                center=(s_rect.centerx - diff, s_rect.midtop[1] + 60)
             )
             screen.blit(self.punctuation_txt, punctuation_rect)
             self.punctuation_toggle.draw(
                 screen, (s_rect.centerx + diff, punctuation_rect.centery - 7)
             )
+            self.preferences["punctuation"] = self.punctuation_toggle.switch
+
