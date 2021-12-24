@@ -8,17 +8,18 @@ from pyhb.typing_tester.words import words
 
 class TextManager:
     def __init__(
-        self,
-        screen: pygame.Surface,
-        punctuation: bool,
-        color: Tuple[int, int, int],
-        duration: int,
+            self,
+            screen: pygame.Surface,
+            punctuation: bool,
+            color: Tuple[int, int, int],
+            duration: int,
     ):
-        self.font = pygame.font.SysFont("leelawadee", 24)
+        self.font = pygame.font.SysFont("arialrounded", 24)
         self.color = color
         self.font_color = [255, 255, 255]
         self.font_error_color = [255, 0, 0]
         self.screen = screen
+        self.screen_rect = screen.get_rect()
 
         # User input
         self.user_passage: List[str] = [""]
@@ -37,6 +38,7 @@ class TextManager:
         self.calc_once = True
 
         # Count variables
+        self.duration = duration
         self.time_left = duration
         self.time_passed = 0
         self.dt = 0
@@ -70,6 +72,7 @@ class TextManager:
         self.wpm_surf = self.font.render(str(self.wpm), True, self.font_color)
         self.accuracy_surf = self.font.render(str(self.accuracy), True, self.font_color)
         self.results_surf = pygame.Surface((200, 200))
+        self.results_surf_rect = self.results_surf.get_rect()
         self.results_surf.set_colorkey((0, 0, 0))
 
         # Create passage & End __init__
@@ -116,7 +119,7 @@ class TextManager:
         """
         num_correct_words = 0
         for word, correct_word in zip(
-            " ".join(self.user_passage).split(), " ".join(self.user_passage).split()
+                " ".join(self.user_passage).split(), " ".join(self.user_passage).split()
         ):
             if word == correct_word:
                 num_correct_words += 1
@@ -131,15 +134,18 @@ class TextManager:
     def append_passage(self, n) -> None:
         self.passage += self.generate_valid_lines(n)
 
-    def update(self, events, dt) -> None:
+    def update(self, events, dt, resize_frame: bool) -> None:
         """
         :param events: -> pygame.event.get()
         :param dt: Amount of time taken to complete last frame * FPS
+        :param resize_frame: Has screen been resized this frame
         :return: None
 
         Updates the TextManager object
         """
         self.dt = dt
+        if resize_frame:
+            self.screen_rect = self.screen.get_rect()
 
         # Handle timer
         if self.start_test:
@@ -158,7 +164,7 @@ class TextManager:
         # Handle count variables
         self.cursor_count += self.dt
         if self.cursor_count >= self.CURSOR_COOLDOWN:
-            self.cursor = "|" if self.cursor else ""
+            self.cursor = "" if self.cursor else "|"
             self.cursor_count = 0
 
         self.delete_count += self.dt
@@ -183,7 +189,7 @@ class TextManager:
                     self.current_indices[self.current_line] += 1
                     try:
                         if len(self.user_passage[self.current_line]) < len(
-                            self.passage[self.current_line]
+                                self.passage[self.current_line]
                         ):
                             self.user_passage[self.current_line] += event.unicode
                             self.start_test = True
@@ -191,10 +197,8 @@ class TextManager:
                             # Update Accuracy variables
                             self.characters_typed += 1
                             if (
-                                event.unicode
-                                == self.passage[self.current_line][
-                                    self.current_indices[self.current_line]
-                                ]
+                                    event.unicode
+                                    == self.passage[self.current_line][self.current_indices[self.current_line]]
                             ):
                                 self.correct_characters_typed += 1
                         else:
@@ -203,7 +207,7 @@ class TextManager:
                         pass
 
                     if self.current_line < len(self.passage) and len(
-                        self.user_passage[self.current_line]
+                            self.user_passage[self.current_line]
                     ) >= len(self.passage[self.current_line]):
                         self.current_line += 1
                         self.current_indices[self.current_line] = -1
@@ -211,13 +215,13 @@ class TextManager:
                         self.user_passage.append("")
                 elif event.key == pygame.K_BACKSPACE:
                     self.user_passage[self.current_line] = self.user_passage[
-                        self.current_line
-                    ][:-1]
+                                                               self.current_line
+                                                           ][:-1]
                     self.current_indices[self.current_line] -= 1
 
                     if (
-                        self.current_line != 0
-                        and not self.user_passage[self.current_line]
+                            self.current_line != 0
+                            and not self.user_passage[self.current_line]
                     ):
                         self.current_line -= 1
 
@@ -228,8 +232,8 @@ class TextManager:
         if keys[pygame.K_BACKSPACE] and self.delete and not self.start_stack:
             if self.user_passage[self.current_line]:
                 self.user_passage[self.current_line] = self.user_passage[
-                    self.current_line
-                ][:-1]
+                                                           self.current_line
+                                                       ][:-1]
                 self.current_indices[self.current_line] -= 1
                 self.cursor = "|"
             elif self.current_line != 0:
@@ -261,28 +265,17 @@ class TextManager:
             stub = []
             for column, char in enumerate(line):
                 if (
-                    self.current_line >= row
-                    and self.current_indices[row] >= column
-                    and self.user_passage[row]
+                        self.current_line >= row
+                        and self.current_indices[row] >= column
+                        and self.user_passage[row]
                 ):
                     try:
                         if self.user_passage[row][column] == self.passage[row][column]:
                             color = self.font_color
                         else:
                             color = self.font_error_color
-                    except IndexError as err:
-                        print(err)
-                        print(185)
-                        print(row, column)
-                        print(len(self.user_passage[self.current_line]))
-                        print(len(self.passage[self.current_line]))
-
-                        with open("debug_output/dump.txt", "w") as f:
-                            f.write("\n".join(self.user_passage))
-
-                        with open("debug_output/dump2.txt", "w") as f:
-                            f.write("\n".join(self.passage))
-                        exit()
+                    except IndexError:
+                        pass
                 else:
                     color = self.font_color
 
@@ -295,18 +288,18 @@ class TextManager:
                     else 0
                 )
                 text_rect = text.get_rect(
-                    center=(self.surf.get_rect().centerx - 250, 10 + increment)
+                    center=(self.screen.get_rect().centerx - 250, 10 + increment)
                 )
                 # pos = (text_rect.topleft[0] + column * self.FONT_WIDTH, text_rect.topleft[1] + row * self.FONT_HEIGHT)
 
                 pos = (
                     text_rect.topleft[0] + column * self.FONT_WIDTH,
-                    text_rect.topleft[1] + row * self.FONT_HEIGHT,
+                    (text_rect.topleft[1] + row * self.FONT_HEIGHT) +
+                    ((self.screen.get_height() // 2) - (self.FONT_HEIGHT * self.START_SCROLL_AFTER))
                 )
 
                 stub.append(pos)
-                # print(pos)
-                self.surf.blit(text, pos)
+                self.screen.blit(text, pos)
             positions.append(stub)
 
         current_pos = list(self.current_indices.items())[-1]
@@ -321,29 +314,19 @@ class TextManager:
 
                 try:
                     if self.user_passage[row][column] == self.passage[row][column]:
-                        self.surf.blit(text, positions[row][column])
+                        self.screen.blit(text, positions[row][column])
                     elif curt:
                         cursor = self.font.render(self.cursor, True, self.font_color)
                         pos = (
                             positions[row][column][0] + self.FONT_WIDTH,
                             positions[row][column][1],
                         )
-                        self.surf.blit(cursor, pos)
+                        self.screen.blit(cursor, pos)
                 except IndexError:
-                    print(211)
-                    print(row, column)
-                    print(len(self.user_passage[self.current_line]))
-                    print(len(self.passage[self.current_line]))
+                    pass
 
-                    with open("dump.txt", "w") as f:
-                        f.write("\n".join(self.user_passage))
-
-                    with open("dump2.txt", "w") as f:
-                        f.write("\n".join(self.passage))
-                    exit()
-
-        self.surf_rect = self.surf.get_rect(center=screen_center)
-        self.screen.blit(self.surf, self.surf_rect)
+        # self.surf_rect = self.surf.get_rect(center=screen_center)
+        # self.screen.blit(self.surf, self.surf_rect)
 
     # TODO: Draw the results in a polished manner
     # Make an increasing number animation and completing arc animation
@@ -356,22 +339,25 @@ class TextManager:
         Mainly WPM and Accuracy
         """
         self.results_surf.fill((0, 0, 0))
-        screen_center = self.screen.get_rect().center
 
-        # TODO: Crop self.results_surf accordingly with `pygame.transform.crop`
+        self.wpm_surf = self.font.render(
+            "WPM: " + str(self.wpm), True, self.font_color
+        )
+        self.accuracy_surf = self.font.render(
+            "Accuracy: " + str(self.accuracy) + "%", True, self.font_color
+        )
+
         if self.calc_once:
             self.wpm, self.accuracy = self.calculate_results()
-            self.wpm_surf = self.font.render(
-                "WPM: " + str(self.wpm), True, self.font_color
-            )
-            self.accuracy_surf = self.font.render(
-                "Accuracy: " + str(self.accuracy) + "%", True, self.font_color
-            )
-
             self.calc_once = False
 
-        self.results_surf.blit(self.wpm_surf, (0, 0))
-        self.results_surf.blit(self.accuracy_surf, (0, self.font.get_height()))
+        self.results_surf_rect = self.results_surf.get_rect(topright=(self.screen_rect.topright[0] - 8,
+                                                                      self.screen_rect.topright[1]))
+        self.screen.blit(self.wpm_surf, self.results_surf_rect)
+        self.screen.blit(self.accuracy_surf,
+                         (self.results_surf_rect.x, self.results_surf_rect.y + self.font.get_height())
+                         )
+        # pygame.draw.rect(self.screen, "red", self.results_surf_rect)
 
         # results_surf_rect = self.results_surf.get_bounding_rect()
         # results_surf_rect.center = screen_center

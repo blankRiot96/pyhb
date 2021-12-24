@@ -30,9 +30,15 @@ def main():
     )
 
     # Set theme
-    settings.theme.set_theme(settings, console)
+    settings.theme.set_theme(settings, console, (0, 0, 0))
 
-    # Time variables
+    # Flags
+    first_frame = True
+
+    # Comparison frame values
+    last_screen_center = screen.get_rect().center
+    last_theme = settings.theme._id
+    current_s_icon_color = (0, 0, 0)
     start = time.perf_counter()
 
     run = True
@@ -49,11 +55,28 @@ def main():
         # Mouse pos
         mouse_pos = pygame.mouse.get_pos()
 
+        # Check if screen has been resized
+        current_screen_center = screen.get_rect().center
+        resize_frame = current_screen_center != last_screen_center
+        last_screen_center = screen.get_rect().center
+
+        # Check if theme has been changed
+        current_theme = settings.theme._id
+        if current_theme != last_theme:
+            settings.theme.set_theme(settings, console, current_s_icon_color)
+            bg_color = settings.theme.bg_color
+            settings.punctuation_txt = settings.font.render("Punctuation", True, settings.theme.font_color)
+            settings.theme_txt = settings.font.render("Themes", True, settings.theme.font_color)
+            current_s_icon_color = settings.theme.settings_icon_color
+
+        last_theme = settings.theme._id
+
         # Event handler
         # c_event = False
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
+                settings.save_preferences(console.duration)
                 run = False
 
         # Draw background
@@ -64,19 +87,18 @@ def main():
 
         if state == "typing_test":
             # Text console
-            console.update(events, dt)
+            console.update(events, dt, resize_frame)
             console.draw()
 
             if console.show_results:
                 settings.state = "settings"
-                settings.results_surf = console.results_surf
         elif state == "settings":
-            # settings.results_surf = console.results_surf
-            ...
+            if console.show_results:
+                console.get_results()
 
         # Settings
         settings.update(mouse_pos, events, dt)
-        settings.draw(screen)
+        settings.draw(screen, resize_frame, console)
 
         state = settings.state
 

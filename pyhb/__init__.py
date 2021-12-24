@@ -1,11 +1,9 @@
 import click
 import os
 import webbrowser
-import random
-from colorama import Fore, Style, Back
+from colorama import Fore
 from pyhb.utils import list_options, user_path
 from typing import Optional
-import sys
 
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
