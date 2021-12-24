@@ -1,17 +1,18 @@
 import pygame
+from pyhb.typing_tester.themes import Theme
 from typing import Tuple
 
 
 class Label:
     def __init__(
-            self,
-            position,
-            size,
-            content: str,
-            colour=None,
-            border_colour=None,
-            txt_colour=(255, 255, 255),
-            shape="rectangle",
+        self,
+        position,
+        size,
+        content: str,
+        colour=None,
+        border_colour=None,
+        txt_colour=(255, 255, 255),
+        shape="rectangle",
     ):
         self.position = position
         self.size = size
@@ -79,13 +80,19 @@ class Toggle:
         self.whole_rect = pygame.Rect(
             (0, 0), (self.rect.width + 2 * self.radius, self.rect.height)
         )
-        self.hover_border_rect = pygame.Rect((0, 0),
-                                             (self.size[0] + self.hover_border_width*2,
-                                              self.size[1] + self.hover_border_width*2))
+        self.hover_border_rect = pygame.Rect(
+            (0, 0),
+            (
+                self.size[0] + self.hover_border_width * 2,
+                self.size[1] + self.hover_border_width * 2,
+            ),
+        )
 
         # Toggle circle thingy
         self.toggle_circle_radius = self.radius - 5
-        self.toggle_circle_rect = pygame.Rect((0, 0), (self.toggle_circle_radius, self.toggle_circle_radius))
+        self.toggle_circle_rect = pygame.Rect(
+            (0, 0), (self.toggle_circle_radius, self.toggle_circle_radius)
+        )
         self.toggle_x = 0
 
         # Information
@@ -149,7 +156,7 @@ class Toggle:
 
         self.color = (r, g, b)
 
-    def draw(self, screen: pygame.Surface, pos: Tuple[int, int]):
+    def draw(self, screen: pygame.Surface, pos: Tuple[int, int], resize_frame: bool):
         self.surf.fill((0, 0, 0))
         self.transition_fade()
         # s_rect = screen.get_rect()
@@ -158,6 +165,9 @@ class Toggle:
         self.pos_rect.topleft = pos
         self.whole_rect.center = self.pos_rect.center
         self.hover_border_rect.center = self.pos_rect.center
+
+        if resize_frame:
+            self.initial_pos = True
 
         if self.initial_pos:
             if self.switch:
@@ -180,12 +190,10 @@ class Toggle:
                 screen,
                 self.hover_border_color,
                 self.pos_rect.midright,
-                self.radius + self.hover_border_width)
+                self.radius + self.hover_border_width,
+            )
 
-            pygame.draw.rect(
-                screen,
-                self.hover_border_color,
-                self.hover_border_rect)
+            pygame.draw.rect(screen, self.hover_border_color, self.hover_border_rect)
 
         pygame.draw.circle(
             screen,
@@ -199,7 +207,12 @@ class Toggle:
         screen.blit(self.surf, pos)
 
         # Draw toggle circle thingy
-        pygame.draw.circle(screen, "white", center=self.toggle_circle_rect.center, radius=self.toggle_circle_radius)
+        pygame.draw.circle(
+            screen,
+            "white",
+            center=self.toggle_circle_rect.center,
+            radius=self.toggle_circle_radius,
+        )
 
         # Widget information
         if self.hover:
@@ -208,5 +221,92 @@ class Toggle:
             self.label.draw(screen)
 
 
+class ThemeWidget:
+    def __init__(self, title, size) -> None:
+        self.theme = Theme(title)
+        self.title = self.theme._id
+        self.size = size
+        self.width, self.height = self.size
+        self.color = self.theme.bg_color
+        self.select_color = pygame.Color("yellow")
+        self.rect = pygame.Rect((0, 0), size)
+
+        # Rects
+        self.hover_pad = 3
+        self.hover_rect = pygame.Rect((0, 0), (self.size[0] + self.hover_pad, self.size[1] + self.hover_pad))
+
+        # Information widget
+        self.label = Label(
+            self.rect.center,
+            (40 * 2.5, 10 * 2.5),
+            self.title,
+            colour="black",
+            border_colour="white",
+        )
+        self.hover = False
+        self.clicked = False
+
+    def update(self, events, mouse_pos) -> None:
+        # Show information on hover
+        self.hover = self.rect.collidepoint(mouse_pos)
+        if self.hover:
+            self.label.rect.topleft = mouse_pos
+
+        for event in events:
+            if self.hover:
+                self.clicked = event.type == pygame.MOUSEBUTTONDOWN
+
+    def draw_label(self, screen):
+        if self.hover:
+            self.label.draw(screen)
+
+    def draw(self, screen, pos) -> None:
+        self.rect.topleft = pos
+        self.hover_rect.topleft = (pos[0] - self.hover_pad, pos[1] - self.hover_pad)
+        pygame.draw.rect(screen, self.color, self.rect)
+        if self.hover:
+            pygame.draw.rect(screen, self.select_color, self.hover_rect, width=self.hover_pad)
+
+
 class ThemeSelection:
-    ...
+    def __init__(self, theme):
+        self.theme = theme
+        self.theme_widget_size = (25, 25)
+        self.theme_widget_padding = 20
+        self.theme_widgets = [
+            ThemeWidget(title, self.theme_widget_size) for title in self.theme.themes
+        ]
+
+        total_width = 4 * (self.theme_widget_size[0] + self.theme_widget_padding)
+        total_height = 2 * (self.theme_widget_padding + self.theme_widget_size[1])
+        self.surf = pygame.Surface((total_width, total_height))
+        self.surf_rect = self.surf.get_rect()
+
+    def draw(self, screen: pygame.Surface, mouse_pos, pos, events):
+        self.surf_rect.center = pos
+        start_pos = self.surf_rect.topleft
+
+        for index, theme_widget in enumerate(self.theme_widgets):
+            y_increment = 0 if index < 4 else 1
+
+            index = index - 4 if y_increment else index
+            theme_widget.update(events, mouse_pos)
+            theme_widget.draw(
+                screen,
+                (
+                    index * (theme_widget.width + self.theme_widget_padding)
+                    + start_pos[0],
+                    (y_increment * (theme_widget.height + self.theme_widget_padding)) + start_pos[1],
+                ),
+            )
+
+            if theme_widget.title == self.theme._id:
+                pygame.draw.rect(screen, "green", theme_widget.hover_rect, width=theme_widget.hover_pad)
+
+            if theme_widget.clicked:
+                self.theme = theme_widget.theme
+
+        for theme_widget in self.theme_widgets:
+            theme_widget.draw_label(screen)
+
+        # screen.blit(self.surf, self.surf_rect)

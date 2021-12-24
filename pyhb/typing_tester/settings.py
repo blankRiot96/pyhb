@@ -4,9 +4,8 @@ import json
 import math
 import os
 from typing import Tuple, Optional
-from pyhb.typing_tester.widgets import Label, Toggle
+from pyhb.typing_tester.widgets import Label, Toggle, ThemeSelection
 from pyhb.typing_tester.themes import Theme
-
 
 """
 Logging setup:-
@@ -32,11 +31,26 @@ def circle_surf(radius, color) -> pygame.Surface:
 class Settings:
     def __init__(self, screen: pygame.Surface) -> None:
         self.screen = screen
-        self.theme = Theme("lavender")
-
         # Path to which 'pyhb' is installed
         self.user_path = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
-        # print(self.user_path + '/settings_icon.png')
+
+        # Get preferences
+        if os.path.exists(self.user_path + "/preferences.json"):
+            with open(self.user_path + "/preferences.json") as f:
+                self.preferences = json.load(f)
+        else:
+            self.preferences = {
+                "punctuation": False,
+                "theme": "lavender",
+                "duration": 30,
+            }
+            with open(self.user_path + "/preferences.json", "w") as f:
+                json.dump(self.preferences, f, indent=2)
+
+        # Make theme
+        self.theme = Theme(self.preferences["theme"])
+
+        # Settings icon
         self.img = pygame.image.load(
             self.user_path + "/assets/settings_icon.png"
         ).convert_alpha()
@@ -56,10 +70,12 @@ class Settings:
             border_colour="white",
         )
         self.punctuation_toggle = Toggle((50, 20))
+        self.theme_selector = ThemeSelection(self.theme)
 
         # Surfaces
-        self.punctuation_txt = self.font.render("Punctuation", True, "white")
-        self.results_surf: Optional[pygame.Surface] = None
+        self.punctuation_txt = self.font.render("Punctuation", True, self.theme.font_color)
+        self.theme_txt = self.font.render("Themes", True, self.theme.font_color)
+        self.theme_txt_rect = self.theme_txt.get_rect()
 
         # Flags
         self.state = "typing_test"
@@ -76,18 +92,9 @@ class Settings:
         self.dt = 0
         self.transition_distance = 0
 
-        if os.path.exists(self.user_path + "/preferences.json"):
-            with open(self.user_path + "/preferences.json") as f:
-                self.preferences = json.load(f)
-            self.theme = Theme(self.preferences["theme"])
-        else:
-            self.preferences = {
-                "punctuation": False,
-                "theme": self.theme._id,
-                "duration": 30,
-            }
-            with open(self.user_path + "/preferences.json", "w") as f:
-                json.dump(self.preferences, f, indent=2)
+        # Themes selector
+        self.mouse_pos = (0, 0)
+        self.events = []
 
     def update(self, mouse_pos: Tuple[int, int], events, dt) -> None:
         """
@@ -100,6 +107,9 @@ class Settings:
         """
 
         self.dt = dt
+        self.mouse_pos = mouse_pos
+        self.events = events
+
         self.hover = self.rect.collidepoint(mouse_pos)
         for event in events:
             if self.hover:
@@ -152,28 +162,32 @@ class Settings:
                     )
                 else:
                     self.start_animation = False
-                    logger.info("END IS REACHED?")
 
         if self.state == "settings":
             self.punctuation_toggle.update(mouse_pos, events, dt)
 
-    def save_preferences(self) -> None:
+    def save_preferences(self, duration) -> None:
         """
         :return: None
 
         Save the user preferences
         """
+        self.preferences["duration"] = duration
+
         with open(self.user_path + "/preferences.json", "w") as f:
             json.dump(self.preferences, f, indent=2)
 
-    def draw(self, screen: pygame.Surface) -> None:
+    def draw(self, screen: pygame.Surface, resize_frame: bool, console) -> None:
         """
         :param screen: Screen to draw on.
+        :param resize_frame: Bool if current frame is resized
+        :param console: Text console in which user types
         :return: None
 
         Deals with rendering the settings related widgets and graphics
         """
         s_rect = screen.get_rect()
+        self.theme_txt_rect.center = (s_rect.centerx, s_rect.centery - self.theme_selector.theme_widget_size[0] * 3)
 
         screen.blit(self.icon, self.rect)
 
@@ -186,19 +200,23 @@ class Settings:
 
         # TODO: Render Themes settings
         if self.state == "settings" and not self.start_animation:
+
+            # Punctuation Toggle
             diff = 75
             punctuation_rect = self.punctuation_txt.get_rect(
                 center=(s_rect.centerx - diff, s_rect.midtop[1] + 60)
             )
             screen.blit(self.punctuation_txt, punctuation_rect)
             self.punctuation_toggle.draw(
-                screen, (s_rect.centerx + diff, punctuation_rect.centery - 7)
+                screen,
+                (s_rect.centerx + diff, punctuation_rect.centery - 7),
+                resize_frame,
             )
             self.preferences["punctuation"] = self.punctuation_toggle.switch
 
-            if self.results_surf:
-                results_surf_rect = self.results_surf.get_bounding_rect()
-                results_surf_rect.center = s_rect.center
-
-                screen.blit(self.results_surf, results_surf_rect)
+            # Theme Selection
+            screen.blit(self.theme_txt, self.theme_txt_rect)
+            self.theme_selector.draw(screen, self.mouse_pos, s_rect.center, self.events)
+            self.theme = self.theme_selector.theme
+            self.preferences["theme"] = self.theme._id
 
