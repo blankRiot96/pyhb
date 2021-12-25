@@ -1,8 +1,9 @@
 import click
+import json
 import os
 import webbrowser
 from colorama import Fore
-from pyhb.utils import list_options, user_path
+from pyhb.utils import list_options, user_path, output
 from typing import Optional
 
 
@@ -67,8 +68,29 @@ def play(song: Optional[str] = None):
 
 
 @main.command(help="Start an aesthetic typing test application")
-# @click.option('--typetest', flag_value="", help="Start an aesthetic typing test application")
-def typetest():
+@click.option("--punctuation", "-p", flag_value=None, type=bool, help="Toggle punctuation true/false")
+@click.option("--theme", "-t", flag_value=None, type=str, help="Choose a theme")
+@click.option("--duration", "-d",  flag_value=None, type=int, help="Choose a duration(15 - 60 is recommended)")
+def typetest(punctuation: Optional[bool], theme: Optional[str], duration: Optional[int]):
+    if os.path.exists(user_path + "/typing_tester/preferences.json"):
+        with open(user_path + "/typing_tester/preferences.json") as f:
+            preferences = json.load(f)
+    else:
+        preferences = {
+            "punctuation": False,
+            "theme": "lavender",
+            "duration": 30,
+            "last_screen_size": [770, 456]
+        }
+    if punctuation is not None:
+        preferences["punctuation"] = punctuation
+    if theme:
+        preferences["theme"] = theme
+    if duration:
+        preferences["duration"] = duration
+    with open(user_path + "/typing_tester/preferences.json", "w") as f:
+        json.dump(preferences, f, indent=2)
+
     from pyhb.typing_tester import main
 
     main()

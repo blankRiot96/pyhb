@@ -1,8 +1,10 @@
 import pygame
+import math
 import random
 from typing import List, Tuple
+from pyhb.typing_tester.generic_types import Color
 from pyhb.typing_tester.display import FPS
-from pyhb.typing_tester.passage_generator import get_sentences, get_words
+from pyhb.typing_tester.passage_generator import get_sentences
 from pyhb.typing_tester.words import words
 
 
@@ -68,12 +70,18 @@ class TextManager:
         )
         self.surf_rect = self.surf.get_rect()
         self.surf.set_colorkey((0, 0, 0))
-        self.time_txt = self.font.render(str(self.time_left), True, self.font_color)
         self.wpm_surf = self.font.render(str(self.wpm), True, self.font_color)
         self.accuracy_surf = self.font.render(str(self.accuracy), True, self.font_color)
-        self.results_surf = pygame.Surface((200, 200))
+        self.wpm_surf_rect = self.wpm_surf.get_rect()
+        self.accuracy_surf_rect = self.accuracy_surf.get_rect()
+        self.results_surf = pygame.Surface((200, self.font.get_height() * 2))
         self.results_surf_rect = self.results_surf.get_rect()
         self.results_surf.set_colorkey((0, 0, 0))
+
+        # Time display
+        self.time_txt = self.font.render(str(self.time_left), True, self.font_color)
+        self.time_txt_rect = self.time_txt.get_rect()
+        self.time_txt_pos = list((self.screen_rect.center[0], self.screen_rect.center[1] - 200))
 
         # Create passage & End __init__
         self.passage: List[str] = []
@@ -125,14 +133,22 @@ class TextManager:
                 num_correct_words += 1
 
         wpm = int(num_correct_words * (60 / self.DURATION))
-        accuracy = round(
-            (self.correct_characters_typed / self.characters_typed) * 100, 2
-        )
+        accuracy = int((self.correct_characters_typed / self.characters_typed) * 100)
 
         return wpm, accuracy
 
     def append_passage(self, n) -> None:
         self.passage += self.generate_valid_lines(n)
+
+    def move_pos(self, target_x, target_y, x, y, speed):
+        # Getting the angle in radians
+        angle = math.atan2(target_y - y, target_x - x)
+
+        # Finding by how much to update position x and y to reach target
+        ix = math.cos(angle) * speed * self.dt
+        iy = math.sin(angle) * speed * self.dt
+
+        return ix, iy
 
     def update(self, events, dt, resize_frame: bool) -> None:
         """
@@ -144,19 +160,32 @@ class TextManager:
         Updates the TextManager object
         """
         self.dt = dt
+
+        # Handle screen resizing
         if resize_frame:
             self.screen_rect = self.screen.get_rect()
+            self.time_txt_pos = list((self.screen_rect.center[0],
+                                      self.screen_rect.center[1] - 200))
 
         # Handle timer
+        self.time_txt = self.font.render(
+            str(self.time_left), True, self.font_color
+        )
         if self.start_test:
             self.time_passed += dt / FPS
             if self.time_passed >= 1:
                 self.time_left -= 1
                 self.time_passed = 0
-                self.time_txt = self.font.render(
-                    str(self.time_left), True, self.font_color
-                )
+            if self.time_txt_pos[0] < self.screen_rect.topright[0] - self.time_txt_rect.width - 10:
+                pad = 10
+                target_x = self.screen_rect.topright[0] - self.time_txt_rect.width - pad
+                target_y = self.screen_rect.topright[1] + pad
+                increment_val = self.move_pos(target_x, target_y,
+                                              self.time_txt_pos[0], self.time_txt_pos[1], speed=5)
+                self.time_txt_pos[0] += increment_val[0]
+                self.time_txt_pos[1] += increment_val[1]
 
+        # Some update
         if self.time_left == 0:
             self.show_results = True
             self.start_test = False
@@ -253,12 +282,10 @@ class TextManager:
 
         Draws the text
         """
-        screen_center = self.screen.get_rect().center
         positions = []
 
         # Timer
-        # self.time_txt_rect = self.time_txt.get_rect(center=(screen_center[0], screen_center[0] - 100))
-        self.screen.blit(self.time_txt, (screen_center[0], screen_center[1] - 200))
+        self.screen.blit(self.time_txt, tuple(self.time_txt_pos))
 
         # Shadow text
         for row, line in enumerate(self.passage):
@@ -282,16 +309,15 @@ class TextManager:
                 text = self.font.render(char, True, color)
                 text.set_alpha(150)
 
-                increment = (
-                    (self.FONT_HEIGHT * -(self.current_line - self.START_SCROLL_AFTER))
-                    if self.current_line >= self.START_SCROLL_AFTER
-                    else 0
-                )
+                if self.current_line >= self.START_SCROLL_AFTER:
+                    increment = (self.FONT_HEIGHT * -(self.current_line - self.START_SCROLL_AFTER))
+                else:
+                    increment = 0
+
                 text_rect = text.get_rect(
                     center=(self.screen.get_rect().centerx - 250, 10 + increment)
                 )
                 # pos = (text_rect.topleft[0] + column * self.FONT_WIDTH, text_rect.topleft[1] + row * self.FONT_HEIGHT)
-
                 pos = (
                     text_rect.topleft[0] + column * self.FONT_WIDTH,
                     (text_rect.topleft[1] + row * self.FONT_HEIGHT) +
@@ -330,7 +356,7 @@ class TextManager:
 
     # TODO: Draw the results in a polished manner
     # Make an increasing number animation and completing arc animation
-    def get_results(self) -> None:
+    def get_results(self, resize_frame: bool, color: Color) -> None:
         """
 
         :return: None
@@ -339,30 +365,31 @@ class TextManager:
         Mainly WPM and Accuracy
         """
         self.results_surf.fill((0, 0, 0))
+        if resize_frame:
+            self.screen_rect = self.screen.get_rect()
 
         self.wpm_surf = self.font.render(
-            "WPM: " + str(self.wpm), True, self.font_color
+            "wpm: " + str(self.wpm), True, self.font_color
         )
         self.accuracy_surf = self.font.render(
-            "Accuracy: " + str(self.accuracy) + "%", True, self.font_color
+            "acc: " + str(self.accuracy) + "%", True, self.font_color
         )
 
         if self.calc_once:
             self.wpm, self.accuracy = self.calculate_results()
+            self.wpm_surf_rect = self.wpm_surf.get_rect()
+            self.accuracy_surf_rect = self.accuracy_surf.get_rect()
             self.calc_once = False
 
-        self.results_surf_rect = self.results_surf.get_rect(topright=(self.screen_rect.topright[0] - 8,
-                                                                      self.screen_rect.topright[1]))
-        self.screen.blit(self.wpm_surf, self.results_surf_rect)
-        self.screen.blit(self.accuracy_surf,
-                         (self.results_surf_rect.x, self.results_surf_rect.y + self.font.get_height())
-                         )
-        # pygame.draw.rect(self.screen, "red", self.results_surf_rect)
+        self.results_surf_rect.topright = (self.screen_rect.topright[0] - 10,
+                                           self.screen_rect.topright[1] + 10)
+        self.wpm_surf_rect.midtop = self.results_surf_rect.midtop
+        self.accuracy_surf_rect.midtop = (self.results_surf_rect.midtop[0],
+                                          self.results_surf_rect.midtop[1] + self.font.get_height())
 
-        # results_surf_rect = self.results_surf.get_bounding_rect()
-        # results_surf_rect.center = screen_center
-        #
-        # self.screen.blit(self.results_surf, results_surf_rect)
+        self.screen.blit(self.wpm_surf, self.wpm_surf_rect)
+        self.screen.blit(self.accuracy_surf, self.accuracy_surf_rect)
+        pygame.draw.rect(self.screen, color, self.results_surf_rect, width=2)
 
     def draw(self) -> None:
         """
@@ -373,7 +400,5 @@ class TextManager:
         """
         self.surf.fill((0, 0, 0))
 
-        if self.show_results:
-            self.get_results()
-        else:
+        if not self.show_results:
             self.draw_text()

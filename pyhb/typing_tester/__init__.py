@@ -32,9 +32,6 @@ def main():
     # Set theme
     settings.theme.set_theme(settings, console, (0, 0, 0))
 
-    # Flags
-    first_frame = True
-
     # Comparison frame values
     last_screen_center = screen.get_rect().center
     last_theme = settings.theme._id
@@ -72,11 +69,10 @@ def main():
         last_theme = settings.theme._id
 
         # Event handler
-        # c_event = False
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-                settings.save_preferences(console.duration)
+                settings.save_preferences(console.duration, list(screen.get_rect().size))
                 run = False
 
         # Draw background
@@ -94,11 +90,11 @@ def main():
                 settings.state = "settings"
         elif state == "settings":
             if console.show_results:
-                console.get_results()
+                console.get_results(resize_frame, color)
 
         # Settings
         settings.update(mouse_pos, events, dt)
-        settings.draw(screen, resize_frame, console)
+        settings.draw(screen, resize_frame)
 
         state = settings.state
 

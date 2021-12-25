@@ -1,5 +1,9 @@
 {
   "punctuation": false,
-  "theme": "monkeytype",
-  "duration": 2
+  "theme": "aqua",
+  "duration": 30,
+  "last_screen_size": [
+    933,
+    553
+  ]
 }

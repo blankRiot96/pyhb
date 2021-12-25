@@ -1,6 +1,8 @@
 import keyboard
 import os
 import random
+from colorama import Fore
+from pyhb.utils import output
 
 # Ignore the pygame welcome message
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
@@ -20,7 +22,7 @@ try:
     ) as f:
         config = json.load(f)
 except FileNotFoundError:
-    print("Soundpacks not installed, try doing 'pyhb install soundpacks'")
+    print("Soundpacks not installed, try doing 'pyhb install'")
 
 
 def set_release(*args, **kwargs):
@@ -34,6 +36,11 @@ def main(sound_pack: str) -> None:
     :param sound_pack: Name of the sound pack
     :return: None
     """
+    # Check if soundpack is valid
+    if sound_pack not in os.listdir(user_path + "/Soundpacks/") or sound_pack == "config.json":
+        output(Fore.RED, f"Soundpack '{sound_pack}' does not exist.")
+        exit()
+
     global RELEASED
     print(f"pyhb has started playing {sound_pack}...")
     print("Use <ctrl + c> to close")
@@ -45,14 +52,8 @@ def main(sound_pack: str) -> None:
     while True:
         key_pressed = keyboard.read_key()
         if key_pressed in conf_vals:
-            if RELEASED:
-                if sound_pack == "nk-cream":
-                    sound = pygame.mixer.Sound(
-                        f"{user_path}/Soundpacks/{sound_pack}/{key_pressed}.wav"
-                    )
-                else:
-                    index = conf_vals.index(key_pressed)
-                    key = conf_keys[index]
+            index = conf_vals.index(key_pressed)
+            key = conf_keys[index]
         else:
             if key_pressed not in session:
                 value = conf_vals[random.randint(0, len(conf_vals) - 1)]
