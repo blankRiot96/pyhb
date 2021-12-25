@@ -57,7 +57,7 @@ class Theme:
             "subtle white": {
                 "bg_color": pygame.Color("0xF5F5F5"),
                 "font_color": (0, 0, 0),
-                "error_color": pygame.Color("0xE8D3FF"),
+                "error_color": pygame.Color("0xDEECFF"),
                 "settings_icon_color": (0, 0, 0),
                 "settings_transition_color": pygame.Color("0xDEECFF"),
             }
@@ -77,7 +77,7 @@ class Theme:
         console.font_error_color = self.error_color
 
         # Set settings icon color
-        if self.settings_icon_color != current_color:
+        if current_color != self.settings_icon_color:
             arr = pygame.PixelArray(settings.img)
             arr.replace(current_color, self.settings_icon_color)
 

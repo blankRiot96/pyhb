@@ -3,7 +3,7 @@ import logging
 import json
 import math
 import os
-from typing import Tuple, Optional
+from typing import Tuple, List
 from pyhb.typing_tester.widgets import Label, Toggle, ThemeSelection
 from pyhb.typing_tester.themes import Theme
 
@@ -43,6 +43,7 @@ class Settings:
                 "punctuation": False,
                 "theme": "lavender",
                 "duration": 30,
+                "last_screen_size": [770, 456]
             }
             with open(self.user_path + "/preferences.json", "w") as f:
                 json.dump(self.preferences, f, indent=2)
@@ -118,7 +119,7 @@ class Settings:
                     radius = self.screen.get_width()
                     self.circle_animation = circle_surf(radius, self.transition_color)
                     self.circle_rect = self.circle_animation.get_rect(
-                        center=(-400, -400)
+                        center=(-400 * (self.screen.get_width() / 700), -400 * (self.screen.get_height() / 400))
                     )
                     self.pos = list(self.circle_rect.topleft)
                     self.expanding = True
@@ -134,8 +135,8 @@ class Settings:
             increment_sqrd = increment ** 2
             if self.expanding:
                 if self.transition_distance <= self.screen.get_width():
-                    self.pos[0] += increment
-                    self.pos[1] += increment
+                    self.pos[0] += increment * (self.screen.get_width() / 700)
+                    self.pos[1] += increment * (self.screen.get_height() / 400)
 
                     self.transition_distance += math.sqrt(
                         increment_sqrd + increment_sqrd
@@ -154,8 +155,8 @@ class Settings:
                     self.expanding = False
             else:
                 if self.transition_distance >= 0:
-                    self.pos[0] -= increment
-                    self.pos[1] -= increment
+                    self.pos[0] -= increment * (self.screen.get_width() / 700)
+                    self.pos[1] -= increment * (self.screen.get_height() / 400)
 
                     self.transition_distance -= math.sqrt(
                         increment_sqrd + increment_sqrd
@@ -166,22 +167,22 @@ class Settings:
         if self.state == "settings":
             self.punctuation_toggle.update(mouse_pos, events, dt)
 
-    def save_preferences(self, duration) -> None:
+    def save_preferences(self, duration, last_screen_size: List[int]) -> None:
         """
         :return: None
 
         Save the user preferences
         """
         self.preferences["duration"] = duration
+        self.preferences["last_screen_size"] = last_screen_size
 
         with open(self.user_path + "/preferences.json", "w") as f:
             json.dump(self.preferences, f, indent=2)
 
-    def draw(self, screen: pygame.Surface, resize_frame: bool, console) -> None:
+    def draw(self, screen: pygame.Surface, resize_frame: bool) -> None:
         """
         :param screen: Screen to draw on.
         :param resize_frame: Bool if current frame is resized
-        :param console: Text console in which user types
         :return: None
 
         Deals with rendering the settings related widgets and graphics
@@ -219,4 +220,7 @@ class Settings:
             self.theme_selector.draw(screen, self.mouse_pos, s_rect.center, self.events)
             self.theme = self.theme_selector.theme
             self.preferences["theme"] = self.theme._id
+
+            # Duration Choice
+
 
