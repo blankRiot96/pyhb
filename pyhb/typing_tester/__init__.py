@@ -72,7 +72,7 @@ def main():
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-                settings.save_preferences(console.duration, list(screen.get_rect().size))
+                settings.save_preferences(list(screen.get_rect().size))
                 run = False
 
         # Draw background

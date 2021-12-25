@@ -4,7 +4,7 @@ import json
 import math
 import os
 from typing import Tuple, List
-from pyhb.typing_tester.widgets import Label, Toggle, ThemeSelection
+from pyhb.typing_tester.widgets import Label, Toggle, ThemeSelection, DurationSelection
 from pyhb.typing_tester.themes import Theme
 
 """
@@ -72,6 +72,7 @@ class Settings:
         )
         self.punctuation_toggle = Toggle((50, 20))
         self.theme_selector = ThemeSelection(self.theme)
+        self.duration_selector = DurationSelection(self.theme, self.preferences["duration"])
 
         # Surfaces
         self.punctuation_txt = self.font.render("Punctuation", True, self.theme.font_color)
@@ -167,13 +168,12 @@ class Settings:
         if self.state == "settings":
             self.punctuation_toggle.update(mouse_pos, events, dt)
 
-    def save_preferences(self, duration, last_screen_size: List[int]) -> None:
+    def save_preferences(self, last_screen_size: List[int]) -> None:
         """
         :return: None
 
         Save the user preferences
         """
-        self.preferences["duration"] = duration
         self.preferences["last_screen_size"] = last_screen_size
 
         with open(self.user_path + "/preferences.json", "w") as f:
@@ -222,5 +222,12 @@ class Settings:
             self.preferences["theme"] = self.theme._id
 
             # Duration Choice
-
-
+            self.duration_selector.draw(screen,
+                                        (
+                                            s_rect.midbottom[0],
+                                            s_rect.midbottom[1] - 120
+                                        ),
+                                        self.preferences["duration"],
+                                        self.mouse_pos,
+                                        self.events)
+            self.preferences["duration"] = self.duration_selector.chosen_duration

@@ -310,3 +310,45 @@ class ThemeSelection:
             theme_widget.draw_label(screen)
 
         # screen.blit(self.surf, self.surf_rect)
+
+
+class DurationSelection:
+    def __init__(self, theme, duration):
+        self.theme = theme
+        self.font = pygame.font.SysFont("arialrounded", 25)
+        self.durations = (15, 30, 45, 60)
+        self.duration_txts = tuple(
+            (self.font.render(str(duration), True, theme.error_color) for duration in self.durations)
+        )
+        self.duration_txts_rects = tuple((duration_txt.get_rect() for duration_txt in self.duration_txts))
+        self.padding = 15
+
+        self.chosen_duration = duration
+        self.clicked = False
+
+    def draw(self, screen, start_pos, console_duration, mouse_pos, events):
+        for event in events:
+            self.clicked = event.type == pygame.MOUSEBUTTONDOWN
+
+        for index, duration_rect in enumerate(self.duration_txts_rects):
+            centering = 2 * (duration_rect.width + self.padding)
+            duration_rect.topleft = (start_pos[0] + (index * (duration_rect.width + self.padding)) - centering,
+                                     start_pos[1])
+
+        for duration, duration_rect in zip(self.duration_txts, self.duration_txts_rects):
+            screen.blit(duration, duration_rect)
+            if duration_rect.collidepoint(mouse_pos):
+                duration.set_alpha(100)
+
+                if self.clicked:
+                    self.chosen_duration = self.durations[self.duration_txts.index(duration)]
+            else:
+                duration.set_alpha(255)
+
+            if console_duration == self.durations[self.duration_txts.index(duration)]:
+                rect = pygame.Rect((0, 0),
+                                   (duration_rect.width + 10,
+                                    duration_rect.height + 10))
+                rect.center = duration_rect.center
+                pygame.draw.rect(screen, self.theme.font_color, rect, width=2)
+
