@@ -3,6 +3,7 @@ Soundpacks/
 debug_output/
 test.py
 *.prof
+Videos/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
