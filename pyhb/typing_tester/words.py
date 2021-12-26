@@ -1,3 +1,10 @@
+"""
+Data file containing words to use in the typing tester
+Terrible way to get words, but due to certain circumstances, we
+have decided to do it like this.
+"""
+
+
 words = """
 a
 treat

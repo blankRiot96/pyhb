@@ -16,7 +16,14 @@ def main():
 @click.option(
     "--soundpack", "-s", is_flag=False, flag_value="", help="Choose a soundpack"
 )
-def start(soundpack: Optional[str] = None):
+def start(soundpack: Optional[str] = None) -> None:
+    """
+    Start playing an ASMR `soundpack`
+    To choose from existing soundpacks, try `pyhb start`
+
+    :param soundpack:
+    :return:
+    """
     from pyhb.keyboard_sound_effects import main
 
     if soundpack:
@@ -34,8 +41,12 @@ def start(soundpack: Optional[str] = None):
 
 
 @main.command(help="Install Soundpacks for pyhb")
-@click.option("--soundpacks", flag_value="")
-def install(soundpacks: str):
+def install_soundpacks() -> None:
+    """
+    Install all soundpacks required for `pyhb start`
+
+    :return: None
+    """
     from pyhb.install_soundpacks import install
 
     install(user_path)
@@ -43,7 +54,17 @@ def install(soundpacks: str):
 
 @main.command(help="Lofi music to be played")
 @click.option("--song", "-s", is_flag=False, flag_value="", help="Choose a song")
-def play(song: Optional[str] = None):
+def play(song: Optional[str] = None) -> None:
+    """
+    Plays a song of user's choice from YouTube
+    To view full playlist visit -
+    https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD
+    or try `pyhb play`
+
+    :param song: Song to be played
+    :return: None
+    """
+
     global COLORS
     songs = {
         "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
@@ -55,8 +76,14 @@ def play(song: Optional[str] = None):
         "*": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD",
     }
 
+    # If song provided, play it if it exists inside of the playlist
     if song:
-        webbrowser.open(songs[song])
+        if song in songs:
+            webbrowser.open(songs[song])
+        else:
+            output(Fore.RED, f"song '{song}' does not exist in the playlist.")
+            output(Fore.YELLOW, f"To view the full list of songs, check the playlist - ")
+            output(Fore.YELLOW, "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD")
     else:
         list_options(songs, colorize=True)
 
@@ -71,7 +98,17 @@ def play(song: Optional[str] = None):
 @click.option("--punctuation", "-p", flag_value=None, type=bool, help="Toggle punctuation true/false")
 @click.option("--theme", "-t", flag_value=None, type=str, help="Choose a theme")
 @click.option("--duration", "-d",  flag_value=None, type=int, help="Choose a duration(15 - 60 is recommended)")
-def typetest(punctuation: Optional[bool], theme: Optional[str], duration: Optional[int]):
+def typetest(punctuation: Optional[bool], theme: Optional[str], duration: Optional[int]) -> None:
+    """
+    Starts an aesthetic and simple typing test application
+    Calculates WPM and Accuracy
+    Has support for different themes, durations and punctuation toggle
+
+    :param punctuation: Decides punctuation or not for the typing test
+    :param theme: Decides the theme for the typing test
+    :param duration: Decides the duration for the typing test
+    :return: None
+    """
     if os.path.exists(user_path + "/typing_tester/preferences.json"):
         with open(user_path + "/typing_tester/preferences.json") as f:
             preferences = json.load(f)

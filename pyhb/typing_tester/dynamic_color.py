@@ -1,3 +1,9 @@
+"""
+Dynamically changing colors, rainbow effect
+Flexible and can be used in other projects
+"""
+
+
 from typing import List, Tuple
 
 

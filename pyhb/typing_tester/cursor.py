@@ -1,3 +1,9 @@
+"""
+Cursor for pygame applications
+Flexible and can be used in other projects
+"""
+
+
 import pygame
 from typing import Union, List, Tuple
 import random

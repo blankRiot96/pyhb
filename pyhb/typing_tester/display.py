@@ -1,3 +1,8 @@
+"""
+Contains display related configuration for the HeartBeat typing test
+"""
+
+
 import os
 import json
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
