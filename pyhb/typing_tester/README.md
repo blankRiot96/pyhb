@@ -13,18 +13,26 @@
 
 ## Themes
   - edgy black
+
 ![](../../Screenshots/type_test.png)
   - captain america
+
 ![](../../Screenshots/captain america.png)
   - lavender
+
 ![](../../Screenshots/lavender.png)
   - monkeytype
+
 ![](../../Screenshots/monkeytype.png)
   - aqua
+
 ![](../../Screenshots/aqua.png)
   - neo city
+
 ![](../../Screenshots/neo city.png)
   - unicorn
+
 ![](../../Screenshots/unicorn.png)
   - subtle white
+
 ![](../../Screenshots/subtle white.png)
