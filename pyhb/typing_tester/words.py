@@ -10,6 +10,7 @@ recall
 along
 cheese
 impose
+why
 smell
 swim
 spend
@@ -110,12 +111,11 @@ treaty
 home
 sugar
 color
+config
 grab
-PC
 farmer
 event
 who
-kiss
 attach
 useful
 trip
@@ -152,7 +152,7 @@ view
 former
 plenty
 but
-Irish
+irish
 bill
 engage
 force
@@ -442,6 +442,7 @@ though
 jet
 resort
 demand
+rest
 rose
 joy
 acid
