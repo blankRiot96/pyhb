@@ -12,7 +12,7 @@
 
 ## Code related contributions
   - First, reading our 
-    <a href="https://github.com/blankRiot96/pyhb/blob/main/README.md#Building `pyhb` locally">building pyhb locally</a>
+    <a href="https://github.com/blankRiot96/pyhb/blob/main/README.md#building-pyhb-locally">building pyhb locally</a>
     is recommended.
   - Before writing some code or making any changes, read our <a href="https://github.com/blankRiot96/pyhb/blob/main/CONTRIBUTING.md#Issues">issues</a> document is recommended.
   - Since we may reject pull requests if there was no issue made, even if you had put a lot of effort and time 
@@ -20,7 +20,7 @@
     small change is highly recommended.
   - Okay, you have made it this far, by now if you had followed the instructions along the way, we believe you 
     are ready to start writing some code!
-  - Read our guide on <a href="https://github.com/blankRiot96/pyhb/blob/main/CONTRIBUTING.md#Writing code for pyhb">writing code for pyhb</a>
+  - Read our guide on <a href="https://github.com/blankRiot96/pyhb/blob/main/CONTRIBUTING.md#Writing-code-for-pyhb">writing code for pyhb</a>
 
 ## Issues
   - There is no need to make issues for small changes such as typo correction or few line code changes.
