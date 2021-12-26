@@ -1,19 +1,39 @@
+"""
+File containing hand written widgets in pygame specific to this project
+Some widgets may/can be used for others as well, but in most cases are project-specific
+"""
+
+
 import pygame
 from pyhb.typing_tester.themes import Theme
-from typing import Tuple
+from pyhb.typing_tester.generic_types import Pos, ColorValue, Size, Events
 
 
 class Label:
+    """
+    Label widget used to display information about other widgets
+    """
     def __init__(
         self,
-        position,
-        size,
+        position: Pos,
+        size: Size,
         content: str,
-        colour=None,
-        border_colour=None,
-        txt_colour=(255, 255, 255),
-        shape="rectangle",
+        colour: ColorValue = None,
+        border_colour: ColorValue = None,
+        txt_colour: ColorValue = (255, 255, 255),
+        shape: str = "rectangle",
     ):
+        """
+        Initialize the Label Widget.
+
+        :param position: Top-left position of the label
+        :param size: Size of the label (width, height)
+        :param content:
+        :param colour:
+        :param border_colour:
+        :param txt_colour:
+        :param shape:
+        """
         self.position = position
         self.size = size
         self.rect = pygame.Rect(self.position, self.size)
@@ -30,11 +50,23 @@ class Label:
         )
 
     def change_txt(self, txt):
+        """
+        Changes the label content
+
+        :param txt: Text to be changed into
+        :return:
+        """
         self.t = pygame.font.SysFont("arial", size=self.rect.size[0] // 8).render(
             txt, True, self.txt_colour
         )
 
     def draw(self, screen: pygame.Surface):
+        """
+        Draws the label
+
+        :param screen: Screen to blit on
+        :return:
+        """
         if self.colour:
             if self.shape == "rectangle":
                 pygame.draw.rect(
@@ -58,7 +90,13 @@ class Label:
 
 
 class Toggle:
-    def __init__(self, size: Tuple[int, int]):
+    """
+    Toggle widget used for Punctuation
+    Slightly more flexible widget and can be used for other projects as well
+    (A large amount of time was spent into designing the implementation and implementing this,
+     it would be disappointing if I could not use this in other projects)
+    """
+    def __init__(self, size: Size):
         self.size = size
 
         # Make rounded Surface
@@ -114,7 +152,15 @@ class Toggle:
         # Count variables
         self.dt = 0
 
-    def update(self, mouse_pos: Tuple[int, int], events, dt):
+    def update(self, mouse_pos: Pos, events: Events, dt: float) -> None:
+        """
+        Update the toggle widget
+
+        :param mouse_pos: Position of the mouse
+        :param events: Events going on in the current frame
+        :param dt: Amount of time taken to complete last frame * FPS
+        :return: None
+        """
         self.dt = dt
 
         self.hover = self.whole_rect.collidepoint(mouse_pos)
@@ -135,6 +181,13 @@ class Toggle:
         self.toggle_circle_rect.x = self.toggle_x
 
     def transition_fade(self) -> None:
+        """
+        Convert rgb(100, 100, 100) -> rgb(0, 255, 0)
+        And vice versa
+        Causes pleasant and subtle fade effect
+
+        :return: None
+        """
         r, g, b = self.color
 
         # r = 100, g = 100, b = 100
@@ -156,7 +209,7 @@ class Toggle:
 
         self.color = (r, g, b)
 
-    def draw(self, screen: pygame.Surface, pos: Tuple[int, int], resize_frame: bool):
+    def draw(self, screen: pygame.Surface, pos: Pos, resize_frame: bool):
         self.surf.fill((0, 0, 0))
         self.transition_fade()
         # s_rect = screen.get_rect()
@@ -222,7 +275,7 @@ class Toggle:
 
 
 class ThemeWidget:
-    def __init__(self, title, size) -> None:
+    def __init__(self, title: str, size: Size) -> None:
         self.theme = Theme(title)
         self.title = self.theme._id
         self.size = size
@@ -246,7 +299,7 @@ class ThemeWidget:
         self.hover = False
         self.clicked = False
 
-    def update(self, events, mouse_pos) -> None:
+    def update(self, events: Events, mouse_pos: Pos) -> None:
         # Show information on hover
         self.hover = self.rect.collidepoint(mouse_pos)
         if self.hover:
@@ -256,11 +309,11 @@ class ThemeWidget:
             if self.hover:
                 self.clicked = event.type == pygame.MOUSEBUTTONDOWN
 
-    def draw_label(self, screen):
+    def draw_label(self, screen: pygame.Surface):
         if self.hover:
             self.label.draw(screen)
 
-    def draw(self, screen, pos) -> None:
+    def draw(self, screen: pygame.Surface, pos: Pos) -> None:
         self.rect.topleft = pos
         self.hover_rect.topleft = (pos[0] - self.hover_pad, pos[1] - self.hover_pad)
         pygame.draw.rect(screen, self.color, self.rect)
@@ -269,7 +322,7 @@ class ThemeWidget:
 
 
 class ThemeSelection:
-    def __init__(self, theme):
+    def __init__(self, theme: Theme):
         self.theme = theme
         self.theme_widget_size = (25, 25)
         self.theme_widget_padding = 20
@@ -282,7 +335,7 @@ class ThemeSelection:
         self.surf = pygame.Surface((total_width, total_height))
         self.surf_rect = self.surf.get_rect()
 
-    def draw(self, screen: pygame.Surface, mouse_pos, pos, events):
+    def draw(self, screen: pygame.Surface, mouse_pos: Pos, pos: Pos, events: Events):
         self.surf_rect.center = pos
         start_pos = self.surf_rect.topleft
 
@@ -313,7 +366,7 @@ class ThemeSelection:
 
 
 class DurationSelection:
-    def __init__(self, theme, duration):
+    def __init__(self, theme: Theme, duration: int):
         self.theme = theme
         self.font = pygame.font.SysFont("arialrounded", 25)
         self.durations = (15, 30, 45, 60)
@@ -326,11 +379,12 @@ class DurationSelection:
         self.chosen_duration = duration
         self.clicked = False
 
-    def draw(self, screen, start_pos, console_duration, mouse_pos, events, error_color):
+    def draw(self, screen: pygame.Surface, start_pos: Pos, console_duration: int, mouse_pos: Pos, events: Events, error_color: ColorValue):
         self.duration_txts = tuple(
             (self.font.render(str(duration), True, error_color) for duration in self.durations)
         )
 
+        # Check for events
         for event in events:
             self.clicked = event.type == pygame.MOUSEBUTTONDOWN
 

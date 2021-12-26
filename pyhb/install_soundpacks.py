@@ -1,3 +1,4 @@
+import click
 import os
 import requests
 from zipfile import ZipFile
@@ -10,7 +11,7 @@ def install(path: str) -> None:
     This function is to allow the user to install the Soundpacks using the
     'pyhb install soundpacks' command
     """
-    print("Installing all the soundpacks now...")
+    click.echo("Installing all the soundpacks now...")
     url = "https://github.com/blankRiot96/hello_cargo/files/7574193/Soundpacks.zip"
     r = requests.get(url, allow_redirects=True)
 

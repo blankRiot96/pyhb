@@ -2,9 +2,8 @@ import pygame
 import math
 import random
 from typing import List, Tuple
-from pyhb.typing_tester.generic_types import Color
+from pyhb.typing_tester.generic_types import ColorValue, Events
 from pyhb.typing_tester.display import FPS
-from pyhb.typing_tester.passage_generator import get_sentences
 from pyhb.typing_tester.words import words
 
 
@@ -13,7 +12,7 @@ class TextManager:
             self,
             screen: pygame.Surface,
             punctuation: bool,
-            color: Tuple[int, int, int],
+            color: ColorValue,
             duration: int,
     ):
         self.font = pygame.font.SysFont("arialrounded", 24)
@@ -88,39 +87,36 @@ class TextManager:
         self.append_passage(6)
         # -- END --
 
-    def generate_valid_lines(self, n: int = None, clington=None) -> List[str]:
+    def generate_valid_lines(self, n: int) -> List[str]:
         """
         :param n: Number of full sentences to be generated. Number of lines may differ.
         """
 
         lines = ""
-        if self.punctuation or clington:
-            if clington:
-                punctuated_lines = clington
-            else:
-                punctuated_lines: List[str] = get_sentences(n)
-            for p in punctuated_lines:
-                line = ""
-                for word in p.split():
-                    line += word + " "
-                    if len(line) >= self.MAX_LINE_LENGTH:
-                        line += "\n"
-                        break
-                lines += line
-        else:
-            for _ in range(n):
-                line = ""
-                while True:
+        prev_word = " "
+        for _ in range(n):
+            line = ""
+            while True:
+                if self.punctuation:
                     word = random.choice(words.split())
-                    line += word + " "
-                    if len(line) >= self.MAX_LINE_LENGTH:
-                        line += "\n"
-                        break
-                lines += line
+                    if "." in prev_word:
+                        word = word[0].upper() + word[1:]
+                    elif prev_word[0].isupper():
+                        pass
+                    elif len(lines.split()) > 5:
+                        word += "."
+                else:
+                    word = random.choice(words.split())
+                prev_word = word
+                line += word + " "
+                if len(line) >= self.MAX_LINE_LENGTH:
+                    line += "\n"
+                    break
+            lines += line
 
         return lines.split("\n")
 
-    def calculate_results(self) -> (int, float):
+    def calculate_results(self) -> Tuple[int, float]:
         """
 
         :return: WPM, Accuracy
@@ -137,10 +133,10 @@ class TextManager:
 
         return wpm, accuracy
 
-    def append_passage(self, n) -> None:
+    def append_passage(self, n: int) -> None:
         self.passage += self.generate_valid_lines(n)
 
-    def move_pos(self, target_x, target_y, x, y, speed):
+    def move_pos(self, target_x: int, target_y: int, x: int, y: int, speed: float):
         # Getting the angle in radians
         angle = math.atan2(target_y - y, target_x - x)
 
@@ -150,7 +146,7 @@ class TextManager:
 
         return ix, iy
 
-    def update(self, events, dt, resize_frame: bool) -> None:
+    def update(self, events: Events, dt: float, resize_frame: bool) -> None:
         """
         :param events: -> pygame.event.get()
         :param dt: Amount of time taken to complete last frame * FPS
@@ -277,10 +273,9 @@ class TextManager:
 
     def draw_text(self) -> None:
         """
+        Draws the text
 
         :return: None
-
-        Draws the text
         """
         positions = []
 
@@ -356,13 +351,12 @@ class TextManager:
 
     # TODO: Draw the results in a polished manner
     # Make an increasing number animation and completing arc animation
-    def get_results(self, resize_frame: bool, color: Color) -> None:
+    def get_results(self, resize_frame: bool, color: ColorValue) -> None:
         """
+        Draws the results at the end of the type test
+        WPM and Accuracy
 
         :return: None
-
-        Draws the results at the end of the type test
-        Mainly WPM and Accuracy
         """
         self.results_surf.fill((0, 0, 0))
         if resize_frame:
@@ -393,10 +387,9 @@ class TextManager:
 
     def draw(self) -> None:
         """
+        Handles what to draw
 
         :return: None
-
-        Handles what to draw
         """
         self.surf.fill((0, 0, 0))
 

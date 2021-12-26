@@ -1,4 +1,10 @@
+"""
+Themes manager for the HeartBeat typing test
+"""
+
+
 import pygame
+from pyhb.typing_tester.generic_types import ColorValue
 
 
 class Theme:
@@ -71,7 +77,7 @@ class Theme:
             self.settings_transition_color,
         ) = self.themes[_id].values()
 
-    def set_theme(self, settings, console, current_color) -> None:
+    def set_theme(self, settings, console, current_color: ColorValue) -> None:
         # Set console font colors
         console.font_color = self.font_color
         console.font_error_color = self.error_color

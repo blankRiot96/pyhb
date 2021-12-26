@@ -1,5 +1,9 @@
+"""
+Utility file for pyhb
+Contains commonly used functions and variables used across the project
+"""
+
 import click
-import logging
 import random
 import os
 from colorama import Fore, Style
@@ -10,11 +14,25 @@ from typing import List, Union
 user_path = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
 
 
-def output(color, msg) -> None:
+def output(color: str, msg: str) -> None:
+    """
+    Outputs message and resets terminal color back to default
+
+    :param color: Color to output
+    :param msg: Message to output
+    :return: None
+    """
     click.echo(color + msg + Style.RESET_ALL)
 
 
 def list_options(options: Union[List[str], dict], colorize: bool = False) -> None:
+    """
+    Lists all options given in a structured manner
+
+    :param options:
+    :param colorize:
+    :return: None
+    """
     color = ""
     if colorize:
         colors = [

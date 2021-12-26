@@ -1,23 +1,11 @@
 import pygame
-import logging
 import json
 import math
 import os
 from typing import Tuple, List
+from pyhb.typing_tester.generic_types import Pos, Size, ColorValue, Events
 from pyhb.typing_tester.widgets import Label, Toggle, ThemeSelection, DurationSelection
 from pyhb.typing_tester.themes import Theme
-
-"""
-Logging setup:-
-"""
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)  # setLevel to `NOTSET` before making a commit
-
-file_handler = logging.FileHandler("debug_output/logger.txt")
-formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(message)s")
-
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
 
 
 def circle_surf(radius, color) -> pygame.Surface:
@@ -29,6 +17,9 @@ def circle_surf(radius, color) -> pygame.Surface:
 
 
 class Settings:
+    """
+    Settings object, renders settings and sets settings for the Typing Test application
+    """
     def __init__(self, screen: pygame.Surface) -> None:
         self.screen = screen
         # Path to which 'pyhb' is installed
@@ -104,7 +95,7 @@ class Settings:
         self.mouse_pos = (0, 0)
         self.events = []
 
-    def update(self, mouse_pos: Tuple[int, int], events, dt) -> None:
+    def update(self, mouse_pos: Pos, events: Events, dt: float) -> None:
         """
         :param mouse_pos: Position of the mouse
         :param events: -> pygame.event.get()
@@ -150,12 +141,6 @@ class Settings:
                     )
 
                     if self.ANIMATION_SPEED * self.dt == 0:
-                        logger.error(
-                            f"""
-                            self.ANIMATION_SPEED\t={self.ANIMATION_SPEED},
-                            dt\t={dt}
-                            """
-                        )
                         exit("debug at `if self.ANIMATION_SPEED * dt == 0`")
                 else:
                     if self.state == "typing_test":

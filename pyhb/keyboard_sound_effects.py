@@ -1,3 +1,4 @@
+import click
 import keyboard
 import os
 import random
@@ -25,7 +26,14 @@ except FileNotFoundError:
     print("Soundpacks not installed, try doing 'pyhb install'")
 
 
-def set_release(*args, **kwargs):
+def set_release(*args, **kwargs) -> None:
+    """
+    :param args:
+    :param kwargs:
+    :return: None
+
+    Sets RELEASED variable to True on key release
+    """
     global RELEASED
     RELEASED = True
 
@@ -42,8 +50,8 @@ def main(sound_pack: str) -> None:
         exit()
 
     global RELEASED
-    print(f"pyhb has started playing {sound_pack}...")
-    print("Use <ctrl + c> to close")
+    click.echo(f"pyhb has started playing {sound_pack}...")
+    click.echo("Use <ctrl + c> to close")
 
     conf_vals = list(config["defines"].values())
     conf_keys = list(config["defines"].keys())

@@ -1,3 +1,9 @@
+"""
+Main file for the HeartBeat typing test
+Coordinates all related objects within its main loop.
+"""
+
+
 import time
 from pyhb.typing_tester.display import *
 from pyhb.typing_tester.settings import Settings
@@ -96,6 +102,7 @@ def main():
             if console.show_results:
                 console.get_results(resize_frame, color)
             if settings.start_animation and not settings.expanding:
+                console.show_results = False
                 console = TextManager(
                     screen,
                     punctuation=settings.preferences["punctuation"],

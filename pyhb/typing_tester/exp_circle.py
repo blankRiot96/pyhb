@@ -1,3 +1,9 @@
+"""
+Expanding Circle effect on click
+Flexible and can be used for other projects
+"""
+
+
 import pygame
 from typing import List, Tuple
 
