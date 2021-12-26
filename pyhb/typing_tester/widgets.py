@@ -326,7 +326,11 @@ class DurationSelection:
         self.chosen_duration = duration
         self.clicked = False
 
-    def draw(self, screen, start_pos, console_duration, mouse_pos, events):
+    def draw(self, screen, start_pos, console_duration, mouse_pos, events, error_color):
+        self.duration_txts = tuple(
+            (self.font.render(str(duration), True, error_color) for duration in self.durations)
+        )
+
         for event in events:
             self.clicked = event.type == pygame.MOUSEBUTTONDOWN
 
@@ -336,14 +340,14 @@ class DurationSelection:
                                      start_pos[1])
 
         for duration, duration_rect in zip(self.duration_txts, self.duration_txts_rects):
-            screen.blit(duration, duration_rect)
             if duration_rect.collidepoint(mouse_pos):
                 duration.set_alpha(100)
-
                 if self.clicked:
                     self.chosen_duration = self.durations[self.duration_txts.index(duration)]
             else:
                 duration.set_alpha(255)
+
+            screen.blit(duration, duration_rect)
 
             if console_duration == self.durations[self.duration_txts.index(duration)]:
                 rect = pygame.Rect((0, 0),

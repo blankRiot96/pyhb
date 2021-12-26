@@ -82,6 +82,8 @@ def main():
         color, direction = return_color(color, direction, dt)
 
         if state == "typing_test":
+            settings.img = settings.settings_icon
+            settings.label.change_txt("settings")
             # Text console
             console.update(events, dt, resize_frame)
             console.draw()
@@ -89,8 +91,17 @@ def main():
             if console.show_results:
                 settings.state = "settings"
         elif state == "settings":
+            settings.img = settings.retry_icon
+            settings.label.change_txt("retry")
             if console.show_results:
                 console.get_results(resize_frame, color)
+            if settings.start_animation and not settings.expanding:
+                console = TextManager(
+                    screen,
+                    punctuation=settings.preferences["punctuation"],
+                    color=settings.theme.font_color,
+                    duration=settings.preferences["duration"],
+                )
 
         # Settings
         settings.update(mouse_pos, events, dt)

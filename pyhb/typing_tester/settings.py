@@ -52,9 +52,14 @@ class Settings:
         self.theme = Theme(self.preferences["theme"])
 
         # Settings icon
-        self.img = pygame.image.load(
+        self.settings_icon = pygame.image.load(
             self.user_path + "/assets/settings_icon.png"
         ).convert_alpha()
+        self.retry_icon = pygame.image.load(
+            self.user_path + "/assets/retry_icon.png"
+        ).convert_alpha()
+
+        self.img = self.settings_icon
         self.icon = pygame.transform.scale(self.img, (40, 40))
         self.rect = self.icon.get_bounding_rect()
         self.rect.center = (30, 30)
@@ -78,6 +83,7 @@ class Settings:
         self.punctuation_txt = self.font.render("Punctuation", True, self.theme.font_color)
         self.theme_txt = self.font.render("Themes", True, self.theme.font_color)
         self.theme_txt_rect = self.theme_txt.get_rect()
+        self.duration_txt = self.font.render("Duration", True, self.theme.font_color)
 
         # Flags
         self.state = "typing_test"
@@ -152,7 +158,10 @@ class Settings:
                         )
                         exit("debug at `if self.ANIMATION_SPEED * dt == 0`")
                 else:
-                    self.state = "settings"
+                    if self.state == "typing_test":
+                        self.state = "settings"
+                    elif self.state == "settings":
+                        self.state = "typing_test"
                     self.expanding = False
             else:
                 if self.transition_distance >= 0:
@@ -222,6 +231,14 @@ class Settings:
             self.preferences["theme"] = self.theme._id
 
             # Duration Choice
+            self.duration_txt = self.font.render("Duration", True, self.theme.font_color)
+            duration_rect = self.duration_txt.get_rect()
+            duration_rect.center = (
+                                            s_rect.midbottom[0],
+                                            s_rect.midbottom[1] - 120 - self.font.get_height()
+                                    )
+
+            screen.blit(self.duration_txt, duration_rect)
             self.duration_selector.draw(screen,
                                         (
                                             s_rect.midbottom[0],
@@ -229,5 +246,6 @@ class Settings:
                                         ),
                                         self.preferences["duration"],
                                         self.mouse_pos,
-                                        self.events)
+                                        self.events,
+                                        self.theme.error_color)
             self.preferences["duration"] = self.duration_selector.chosen_duration
