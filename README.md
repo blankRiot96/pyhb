@@ -1,4 +1,14 @@
 # ![](pyhb/typing_tester/assets/pyhb_icon.png) pyhb
+  ![](https://img.shields.io/github/license/blankRiot96/pyhb) 
+  ![](https://img.shields.io/github/v/tag/blankRiot96/pyhb)
+  ![](https://img.shields.io/pypi/dm/pyhb)
+  ![](https://img.shields.io/github/pipenv/locked/dependency-version/blankRiot96/pyhb/pygame) 
+  ![](https://img.shields.io/github/pipenv/locked/dependency-version/blankRiot96/pyhb/keyboard)
+  ![](https://img.shields.io/github/pipenv/locked/dependency-version/blankRiot96/pyhb/requests) 
+  ![](https://img.shields.io/github/pipenv/locked/dependency-version/blankRiot96/pyhb/click) 
+  ![](https://img.shields.io/github/issues-closed/blankRiot96/pyhb)
+  
+
 An ASMR keyboard sound effect CLI package
 
 ## Installation
