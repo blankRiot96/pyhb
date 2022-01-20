@@ -128,6 +128,7 @@ def typetest(punctuation: Optional[bool], theme: Optional[str], duration: Option
     with open(user_path + "/typing_tester/preferences.json", "w") as f:
         json.dump(preferences, f, indent=2)
 
+    from pyhb.typing_tester.display import screen, clock, FPS
     from pyhb.typing_tester import main
 
-    main()
+    main(screen, clock, FPS)
