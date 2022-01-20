@@ -3,7 +3,6 @@ import math
 import random
 from typing import List, Tuple
 from pyhb.typing_tester.generic_types import ColorValue, Events
-from pyhb.typing_tester.display import FPS
 from pyhb.utils import user_path
 
 
@@ -170,7 +169,7 @@ class TextManager:
             str(self.time_left), True, self.font_color
         )
         if self.start_test:
-            self.time_passed += dt / FPS
+            self.time_passed += dt / 100
             if self.time_passed >= 1:
                 self.time_left -= 1
                 self.time_passed = 0
