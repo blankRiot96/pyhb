@@ -23,4 +23,4 @@ jobs:
             python3 -m unittest discover -s tests/
       - store_artifacts:
           path: test-reports/
-          destination: python_app
+          destination: pyhb
