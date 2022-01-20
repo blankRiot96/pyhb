@@ -47,6 +47,7 @@ def main(sound_pack: str) -> None:
     # Check if soundpack is valid
     if sound_pack not in os.listdir(user_path + "/Soundpacks/") or sound_pack == "config.json":
         output(Fore.RED, f"Soundpack '{sound_pack}' does not exist.")
+        output(Fore.YELLOW, 'Have you tried installing them first? `pyhb install-soundpacks`')
         exit()
 
     global RELEASED
