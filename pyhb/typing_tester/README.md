@@ -8,31 +8,31 @@
 
 ## Screenshots
 
-![](../../Screenshots/type_test.png)
-![](../../Screenshots/settings.png)
+![](../../screen_shots/type_test.png)
+![](../../screen_shots/settings.png)
 
 ## Themes
   - edgy black
 
-![](../../Screenshots/type_test.png)
+![](../../screen_shots/type_test.png)
   - captain america
 
-![](../../Screenshots/captain america.png)
+![](../../screen_shots/captain america.png)
   - lavender
 
-![](../../Screenshots/lavender.png)
+![](../../screen_shots/lavender.png)
   - monkeytype
 
-![](../../Screenshots/monkeytype.png)
+![](../../screen_shots/monkeytype.png)
   - aqua
 
-![](../../Screenshots/aqua.png)
+![](../../screen_shots/aqua.png)
   - neo city
 
-![](../../Screenshots/neo city.png)
+![](../../screen_shots/neo city.png)
   - unicorn
 
-![](../../Screenshots/unicorn.png)
+![](../../screen_shots/unicorn.png)
   - subtle white
 
-![](../../Screenshots/subtle white.png)
+![](../../screen_shots/subtle white.png)

@@ -1,0 +1,6 @@
+click~=8.0.3
+colorama~=0.4.4
+pygame~=2.1.0
+requests~=2.26.0
+keyboard~=0.13.5
+setuptools~=57.0.0

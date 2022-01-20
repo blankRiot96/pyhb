@@ -64,7 +64,7 @@ def main(sound_pack: str) -> None:
             key = conf_keys[index]
         else:
             if key_pressed not in session:
-                value = conf_vals[random.randint(0, len(conf_vals) - 1)]
+                value = random.choice(conf_vals)
                 session[key_pressed] = value
 
             key_pressed = session[key_pressed]
