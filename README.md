@@ -70,9 +70,10 @@ After installation, installing the sound packs is recommended
   - Change into the directory `cd pyhb`
   - We recommend using `pipenv` to install the dependencies 
   - `pip install pipenv`
-  - `pipenv shell`
+  - `pipenv shell`  Create a fresh virtual environment
+  - `pipenv install -r requirements.txt`  Install the dependencies
   - Now you should have all the packages installed into the new virtual environment you have created
-  - Now, you can build the `.whl` file with `python setup.py sdist bdist_wheel`
+  - Now, you can build the `.whl` file with `python -m build` 
   - Or, just run `pyhb` with `python -m pyhb`
 
 
