@@ -1,9 +1,8 @@
 from setuptools import setup, find_packages
 
-# py setup.py sdist bdist_wheel
-# pip install twine
+# py -m build
 # twine upload dist/*
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 DESCRIPTION = "An ASMR keyboard sound effect CLI package"
 LONG_DESCRIPTION = """
 An ASMR keyboard sound effect package,
@@ -37,5 +36,8 @@ setup(
     ],
     entry_points={"console_scripts": ["pyhb=pyhb:main"]},
     include_package_data=True,
-    data_files=["pyhb/typing_tester/assets/pyhb_icon.png", "pyhb/typing_tester/assets/retry_icon.png", "pyhb/typing_tester/assets/settings_icon.png"],
+    data_files=["pyhb/typing_tester/assets/pyhb_icon.png",
+                "pyhb/typing_tester/assets/retry_icon.png",
+                "pyhb/typing_tester/assets/settings_icon.png",
+                "pyhb/typing_tester/words.txt"],
 )

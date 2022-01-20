@@ -4,7 +4,7 @@ import random
 from typing import List, Tuple
 from pyhb.typing_tester.generic_types import ColorValue, Events
 from pyhb.typing_tester.display import FPS
-from pyhb.typing_tester.words import words
+from pyhb.utils import user_path
 
 
 class TextManager:
@@ -21,6 +21,8 @@ class TextManager:
         self.font_error_color = [255, 0, 0]
         self.screen = screen
         self.screen_rect = screen.get_rect()
+        with open(user_path + "/typing_tester/words.txt") as f:
+            self.words = f.read()
 
         # User input
         self.user_passage: List[str] = [""]
@@ -98,7 +100,7 @@ class TextManager:
             line = ""
             while True:
                 if self.punctuation:
-                    word = random.choice(words.split())
+                    word = random.choice(self.words.split())
                     if "." in prev_word:
                         word = word[0].upper() + word[1:]
                     elif prev_word[0].isupper():
@@ -106,7 +108,7 @@ class TextManager:
                     elif len(lines.split()) > 5:
                         word += "."
                 else:
-                    word = random.choice(words.split())
+                    word = random.choice(self.words.split())
                 prev_word = word
                 line += word + " "
                 if len(line) >= self.MAX_LINE_LENGTH:
