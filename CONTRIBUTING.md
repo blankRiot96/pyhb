@@ -11,9 +11,6 @@
     than minor code related contributions.
 
 ## Code related contributions
-  - First, reading our 
-    <a href="https://github.com/blankRiot96/pyhb/blob/main/README.md#building-pyhb-locally">building pyhb locally</a>
-    is recommended.
   - Before writing some code or making any changes, read our <a href="https://github.com/blankRiot96/pyhb/blob/main/CONTRIBUTING.md#Issues">issues</a> document is recommended.
   - Since we may reject pull requests if there was no issue made, even if you had put a lot of effort and time 
     into it. It would be upsetting for both sides if such an event happens, so posting an issue unless it is a very
