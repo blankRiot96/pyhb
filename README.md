@@ -12,8 +12,13 @@
 An ASMR keyboard sound effect CLI package
 
 ## Installation
-If you have Python 3.7+ Installed,
- - `pip install pyhb`
+If you have Python 3.7+ and git Installed,
+ - `pip install git+https://github.com/blankRiot96/pyhb`
+
+Alternatively, you could clone the repository and install it from within
+instead
+- `git clone https://github.com/blankRiot96/pyhb`
+- `pip install .`
 
 After installation, installing the sound packs is recommended
  - `pyhb install-soundpacks`
@@ -64,18 +69,6 @@ After installation, installing the sound packs is recommended
     - For more information do `pyhb play --help`
   
   - For more information do `pyhb --help`
-
-## Building `pyhb` locally
-  - Start by cloning the repository, `git clone https://github.com/blankRiot96/pyhb.git`
-  - Change into the directory `cd pyhb`
-  - We recommend using `pipenv` to install the dependencies 
-  - `pip install pipenv`
-  - `pipenv shell`  Create a fresh virtual environment
-  - `pipenv install -r requirements.txt`  Install the dependencies
-  - Now you should have all the packages installed into the new virtual environment you have created
-  - Now, you can build the `.whl` file with `python -m build` 
-  - Or, just run `pyhb` with `python -m pyhb`
-
 
 ## Contributing
   - For details on contributing, we recommend you look at our <a href="https://github.com/blankRiot96/pyhb/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>
