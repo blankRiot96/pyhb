@@ -24,11 +24,9 @@ def start(soundpack: Optional[str] = None) -> None:
     :param soundpack:
     :return:
     """
-    from pyhb.keyboard_sound_effects import main
+    from pyhb.keyboard_sound_effects import play_keybrd_sfx
 
-    if soundpack:
-        from pyhb.keyboard_sound_effects import main
-    else:
+    if not soundpack:
         soundpacks = os.listdir(user_path + "/Soundpacks")
         soundpacks.remove("config.json")
 
@@ -37,7 +35,7 @@ def start(soundpack: Optional[str] = None) -> None:
         promt = int(input("Choose a soundpack: "))
         soundpack = soundpacks[promt - 1]
 
-    main(soundpack)
+    play_keybrd_sfx(soundpack)
 
 
 @main.command(help="Install Soundpacks for pyhb")
@@ -82,8 +80,13 @@ def play(song: Optional[str] = None) -> None:
             webbrowser.open(songs[song])
         else:
             output(Fore.RED, f"song '{song}' does not exist in the playlist.")
-            output(Fore.YELLOW, f"To view the full list of songs, check the playlist - ")
-            output(Fore.YELLOW, "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD")
+            output(
+                Fore.YELLOW, f"To view the full list of songs, check the playlist - "
+            )
+            output(
+                Fore.YELLOW,
+                "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD",
+            )
     else:
         list_options(songs, colorize=True)
 
@@ -95,10 +98,24 @@ def play(song: Optional[str] = None) -> None:
 
 
 @main.command(help="Start an aesthetic typing test application")
-@click.option("--punctuation", "-p", flag_value=None, type=bool, help="Toggle punctuation true/false")
+@click.option(
+    "--punctuation",
+    "-p",
+    flag_value=None,
+    type=bool,
+    help="Toggle punctuation true/false",
+)
 @click.option("--theme", "-t", flag_value=None, type=str, help="Choose a theme")
-@click.option("--duration", "-d",  flag_value=None, type=int, help="Choose a duration(15 - 60 is recommended)")
-def typetest(punctuation: Optional[bool], theme: Optional[str], duration: Optional[int]) -> None:
+@click.option(
+    "--duration",
+    "-d",
+    flag_value=None,
+    type=int,
+    help="Choose a duration(15 - 60 is recommended)",
+)
+def typetest(
+    punctuation: Optional[bool], theme: Optional[str], duration: Optional[int]
+) -> None:
     """
     Starts an aesthetic and simple typing test application
     Calculates WPM and Accuracy
@@ -117,7 +134,7 @@ def typetest(punctuation: Optional[bool], theme: Optional[str], duration: Option
             "punctuation": False,
             "theme": "lavender",
             "duration": 30,
-            "last_screen_size": [770, 456]
+            "last_screen_size": [770, 456],
         }
     if punctuation is not None:
         preferences["punctuation"] = punctuation
