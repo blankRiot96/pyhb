@@ -1,9 +1,8 @@
-import click
 import keyboard
 import os
 import random
-from colorama import Fore
-from pyhb.utils import output
+from pyhb.common import SOUNDPACKS_PATH, KEYBOARD_TYPING_DISPLAY_MSG
+import typing as t
 
 # Ignore the pygame welcome message
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
@@ -11,77 +10,81 @@ import pygame
 import json
 
 
-# Initialize the pygame.mixer submodule
-pygame.mixer.init()
+def load_soundpack_config() -> dict:
+    """Returns the configuration for the soundpacks."""
 
-RELEASED = True
+    if not os.path.exists(SOUNDPACKS_PATH / "config.json"):
+        raise FileNotFoundError(
+            """
+            Soundpacks config does not exist. 
+            Try installing soundpacks with 'pyhb install-soundpacks'
+            """
+        )
 
-try:
-    with open(
-        os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
-        + "/Soundpacks/config.json"
-    ) as f:
+    with open(SOUNDPACKS_PATH / "config.json") as f:
         config = json.load(f)
-except FileNotFoundError:
-    print("Soundpacks not installed, try doing 'pyhb install'")
+
+    return config["defines"]
 
 
-def set_release(*args, **kwargs) -> None:
-    """
-    :param args:
-    :param kwargs:
-    :return: None
-
-    Sets RELEASED variable to True on key release
-    """
-    global RELEASED
-    RELEASED = True
+def play_key_sfx(key: str, sound_pack: str) -> None:
+    """Plays specific key stroke effect."""
+    sound_obj = pygame.mixer.Sound(SOUNDPACKS_PATH / sound_pack / key)
+    sound_obj.play()
 
 
-def main(sound_pack: str) -> None:
-    user_path = os.path.dirname(os.path.realpath(__file__))
-    """
-    :param sound_pack: Name of the sound pack
-    :return: None
-    """
-    # Check if soundpack is valid
-    if sound_pack not in os.listdir(user_path + "/Soundpacks/") or sound_pack == "config.json":
-        output(Fore.RED, f"Soundpack '{sound_pack}' does not exist.")
-        output(Fore.YELLOW, 'Have you tried installing them first? `pyhb install-soundpacks`')
-        exit()
+def get_available_keys(sound_pack: str, config: dict) -> t.Tuple[str, t.Set[str]]:
+    """Get the available keys and the file extention."""
 
-    global RELEASED
-    click.echo(f"pyhb has started playing {sound_pack}...")
-    click.echo("Use <ctrl + c> to close")
+    if sound_pack == "nk-cream":
+        file_ext = ".wav"
+        available_keys = {
+            key.name.replace(file_ext, "")
+            for key in (SOUNDPACKS_PATH / sound_pack).iterdir()
+        }
+    else:
+        file_ext = ".ogg"
+        available_keys = {
+            config.get(key.name.replace(file_ext, ""))
+            for key in (SOUNDPACKS_PATH / sound_pack).iterdir()
+        }
 
-    conf_vals = list(config["defines"].values())
-    conf_keys = list(config["defines"].keys())
+    return file_ext, available_keys  # type: ignore
 
-    session = {}
+
+def play_keybrd_sfx(sound_pack: str) -> None:
+    """Plays keyboard sound effects."""
+    pygame.mixer.init()
+
+    # Get available soundpacks and check if sound_pack
+    # is part of it.
+    available_sound_packs = os.listdir(SOUNDPACKS_PATH)
+    available_sound_packs.remove("config.json")
+    if sound_pack not in available_sound_packs:
+        raise FileNotFoundError(
+            f"""
+            Soundpack '{sound_pack}' does not exist.
+            """
+        )
+
+    print(KEYBOARD_TYPING_DISPLAY_MSG.format(sound_pack=sound_pack))
+
+    config = load_soundpack_config()
+    file_ext, available_keys = get_available_keys(sound_pack, config)
+    registered_keys: t.Dict[str, str] = dict()
+
     while True:
-        key_pressed = keyboard.read_key()
-        if key_pressed in conf_vals:
-            index = conf_vals.index(key_pressed)
-            key = conf_keys[index]
-        else:
-            if key_pressed not in session:
-                value = random.choice(conf_vals)
-                session[key_pressed] = value
+        event = keyboard.read_event()
+        if event.event_type == keyboard.KEY_DOWN:
+            if event.name is None:
+                continue
 
-            key_pressed = session[key_pressed]
-            index = conf_vals.index(key_pressed)
-            key = conf_keys[index]
+            if event.name in available_keys:
+                play_key_sfx(event.name + file_ext, sound_pack)
+                continue
 
-        if RELEASED:
-            if sound_pack == "nk-cream":
-                sound = pygame.mixer.Sound(
-                    f"{user_path}/Soundpacks/{sound_pack}/{key_pressed}.wav"
-                )
-            else:
-                sound = pygame.mixer.Sound(
-                    f"{user_path}/Soundpacks/{sound_pack}/{key}.ogg"
-                )
-            sound.play()
-            RELEASED = False
-
-        keyboard.on_release(set_release)
+            if event.name not in registered_keys:
+                registered_keys[event.name] = random.choice(tuple(available_keys))
+            play_key_sfx(
+                registered_keys.get(event.name, "enter") + file_ext, sound_pack
+            )
