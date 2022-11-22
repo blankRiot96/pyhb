@@ -1,11 +1,14 @@
-import pygame
 import json
 import math
 import os
-from typing import Tuple, List
-from pyhb.typing_tester.generic_types import Pos, Size, ColorValue, Events
-from pyhb.typing_tester.widgets import Label, Toggle, ThemeSelection, DurationSelection
+from typing import List, Tuple
+
+import pygame
+
+from pyhb.typing_tester.generic_types import ColorValue, Events, Pos, Size
 from pyhb.typing_tester.themes import Theme
+from pyhb.typing_tester.widgets import (DurationSelection, Label,
+                                        ThemeSelection, Toggle)
 
 
 def circle_surf(radius, color) -> pygame.Surface:

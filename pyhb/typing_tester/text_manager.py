@@ -1,7 +1,9 @@
-import pygame
 import math
 import random
 from typing import List, Tuple
+
+import pygame
+
 from pyhb.typing_tester.generic_types import ColorValue, Events
 from pyhb.utils import user_path
 

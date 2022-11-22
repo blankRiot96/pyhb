@@ -5,8 +5,9 @@ Some widgets may/can be used for others as well, but in most cases are project-s
 
 
 import pygame
+
+from pyhb.typing_tester.generic_types import ColorValue, Events, Pos, Size
 from pyhb.typing_tester.themes import Theme
-from pyhb.typing_tester.generic_types import Pos, ColorValue, Size, Events
 
 
 class Label:

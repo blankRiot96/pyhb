@@ -3,12 +3,12 @@ Utility file for pyhb
 Contains commonly used functions and variables used across the project
 """
 
-import click
-import random
 import os
-from colorama import Fore, Style
+import random
 from typing import List, Union
 
+import click
+from colorama import Fore, Style
 
 # Path to which 'pyhb' is installed
 user_path = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
