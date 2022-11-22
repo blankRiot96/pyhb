@@ -4,13 +4,14 @@ Coordinates all related objects within its main loop.
 """
 
 import time
+
 import pygame
-from pyhb.typing_tester.settings import Settings
-from pyhb.typing_tester.text_manager import TextManager
+
 from pyhb.typing_tester.cursor import Cursor
 from pyhb.typing_tester.dynamic_color import return_color
 from pyhb.typing_tester.exp_circle import ExpandingCircles
 from pyhb.typing_tester.settings import Settings
+from pyhb.typing_tester.text_manager import TextManager
 
 
 def main(screen, clock, FPS):
@@ -67,8 +68,12 @@ def main(screen, clock, FPS):
         if current_theme != last_theme:
             settings.theme.set_theme(settings, console, current_s_icon_color)
             bg_color = settings.theme.bg_color
-            settings.punctuation_txt = settings.font.render("Punctuation", True, settings.theme.font_color)
-            settings.theme_txt = settings.font.render("Themes", True, settings.theme.font_color)
+            settings.punctuation_txt = settings.font.render(
+                "Punctuation", True, settings.theme.font_color
+            )
+            settings.theme_txt = settings.font.render(
+                "Themes", True, settings.theme.font_color
+            )
             current_s_icon_color = settings.theme.settings_icon_color
 
         last_theme = settings.theme._id
@@ -130,4 +135,5 @@ def main(screen, clock, FPS):
 
 if __name__ == "__main__":
     from pyhb.typing_tester.display import *
+
     main(screen, clock, FPS)

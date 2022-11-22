@@ -1,13 +1,16 @@
-import keyboard
 import os
 import random
-from pyhb.common import SOUNDPACKS_PATH, KEYBOARD_TYPING_DISPLAY_MSG
 import typing as t
+
+import keyboard
+
+from pyhb.common import KEYBOARD_TYPING_DISPLAY_MSG, SOUNDPACKS_PATH
 
 # Ignore the pygame welcome message
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
-import pygame
 import json
+
+import pygame
 
 
 def load_soundpack_config() -> dict:

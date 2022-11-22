@@ -1,11 +1,14 @@
-import pygame
 import json
 import math
 import os
-from typing import Tuple, List
-from pyhb.typing_tester.generic_types import Pos, Size, ColorValue, Events
-from pyhb.typing_tester.widgets import Label, Toggle, ThemeSelection, DurationSelection
+from typing import List, Tuple
+
+import pygame
+
+from pyhb.typing_tester.generic_types import ColorValue, Events, Pos, Size
 from pyhb.typing_tester.themes import Theme
+from pyhb.typing_tester.widgets import (DurationSelection, Label,
+                                        ThemeSelection, Toggle)
 
 
 def circle_surf(radius, color) -> pygame.Surface:
@@ -20,6 +23,7 @@ class Settings:
     """
     Settings object, renders settings and sets settings for the Typing Test application
     """
+
     def __init__(self, screen: pygame.Surface) -> None:
         self.screen = screen
         # Path to which 'pyhb' is installed
@@ -34,7 +38,7 @@ class Settings:
                 "punctuation": False,
                 "theme": "lavender",
                 "duration": 30,
-                "last_screen_size": [770, 456]
+                "last_screen_size": [770, 456],
             }
             with open(self.user_path + "/preferences.json", "w") as f:
                 json.dump(self.preferences, f, indent=2)
@@ -68,10 +72,14 @@ class Settings:
         )
         self.punctuation_toggle = Toggle((50, 20))
         self.theme_selector = ThemeSelection(self.theme)
-        self.duration_selector = DurationSelection(self.theme, self.preferences["duration"])
+        self.duration_selector = DurationSelection(
+            self.theme, self.preferences["duration"]
+        )
 
         # Surfaces
-        self.punctuation_txt = self.font.render("Punctuation", True, self.theme.font_color)
+        self.punctuation_txt = self.font.render(
+            "Punctuation", True, self.theme.font_color
+        )
         self.theme_txt = self.font.render("Themes", True, self.theme.font_color)
         self.theme_txt_rect = self.theme_txt.get_rect()
         self.duration_txt = self.font.render("Duration", True, self.theme.font_color)
@@ -117,7 +125,10 @@ class Settings:
                     radius = self.screen.get_width()
                     self.circle_animation = circle_surf(radius, self.transition_color)
                     self.circle_rect = self.circle_animation.get_rect(
-                        center=(-400 * (self.screen.get_width() / 700), -400 * (self.screen.get_height() / 400))
+                        center=(
+                            -400 * (self.screen.get_width() / 700),
+                            -400 * (self.screen.get_height() / 400),
+                        )
                     )
                     self.pos = list(self.circle_rect.topleft)
                     self.expanding = True
@@ -130,7 +141,7 @@ class Settings:
 
         if self.start_animation:
             increment = self.ANIMATION_SPEED * self.dt
-            increment_sqrd = increment ** 2
+            increment_sqrd = increment**2
             if self.expanding:
                 if self.transition_distance <= self.screen.get_width():
                     self.pos[0] += increment * (self.screen.get_width() / 700)
@@ -182,7 +193,10 @@ class Settings:
         Deals with rendering the settings related widgets and graphics
         """
         s_rect = screen.get_rect()
-        self.theme_txt_rect.center = (s_rect.centerx, s_rect.centery - self.theme_selector.theme_widget_size[0] * 3)
+        self.theme_txt_rect.center = (
+            s_rect.centerx,
+            s_rect.centery - self.theme_selector.theme_widget_size[0] * 3,
+        )
 
         screen.blit(self.icon, self.rect)
 
@@ -216,21 +230,22 @@ class Settings:
             self.preferences["theme"] = self.theme._id
 
             # Duration Choice
-            self.duration_txt = self.font.render("Duration", True, self.theme.font_color)
+            self.duration_txt = self.font.render(
+                "Duration", True, self.theme.font_color
+            )
             duration_rect = self.duration_txt.get_rect()
             duration_rect.center = (
-                                            s_rect.midbottom[0],
-                                            s_rect.midbottom[1] - 120 - self.font.get_height()
-                                    )
+                s_rect.midbottom[0],
+                s_rect.midbottom[1] - 120 - self.font.get_height(),
+            )
 
             screen.blit(self.duration_txt, duration_rect)
-            self.duration_selector.draw(screen,
-                                        (
-                                            s_rect.midbottom[0],
-                                            s_rect.midbottom[1] - 120
-                                        ),
-                                        self.preferences["duration"],
-                                        self.mouse_pos,
-                                        self.events,
-                                        self.theme.error_color)
+            self.duration_selector.draw(
+                screen,
+                (s_rect.midbottom[0], s_rect.midbottom[1] - 120),
+                self.preferences["duration"],
+                self.mouse_pos,
+                self.events,
+                self.theme.error_color,
+            )
             self.preferences["duration"] = self.duration_selector.chosen_duration
