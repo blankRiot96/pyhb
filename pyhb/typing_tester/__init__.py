@@ -68,8 +68,12 @@ def main(screen, clock, FPS):
         if current_theme != last_theme:
             settings.theme.set_theme(settings, console, current_s_icon_color)
             bg_color = settings.theme.bg_color
-            settings.punctuation_txt = settings.font.render("Punctuation", True, settings.theme.font_color)
-            settings.theme_txt = settings.font.render("Themes", True, settings.theme.font_color)
+            settings.punctuation_txt = settings.font.render(
+                "Punctuation", True, settings.theme.font_color
+            )
+            settings.theme_txt = settings.font.render(
+                "Themes", True, settings.theme.font_color
+            )
             current_s_icon_color = settings.theme.settings_icon_color
 
         last_theme = settings.theme._id
@@ -131,4 +135,5 @@ def main(screen, clock, FPS):
 
 if __name__ == "__main__":
     from pyhb.typing_tester.display import *
+
     main(screen, clock, FPS)

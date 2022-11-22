@@ -11,8 +11,12 @@ class TestWords(unittest.TestCase):
 
         :return: None
         """
-        self.assertEqual(user_path,
-                         os.path.dirname(os.path.realpath(__file__)).replace("\\", "/").replace("tests", "pyhb"))
+        self.assertEqual(
+            user_path,
+            os.path.dirname(os.path.realpath(__file__))
+            .replace("\\", "/")
+            .replace("tests", "pyhb"),
+        )
 
     def test_words(self):
         """
@@ -30,5 +34,5 @@ class TestWords(unittest.TestCase):
                 self.assertTrue(word.isalpha())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

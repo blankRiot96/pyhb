@@ -2,13 +2,15 @@ import json
 import os
 import webbrowser
 from typing import Optional
+from zipfile import ZipFile
 
 import click
+import requests
 from colorama import Fore
 
-from pyhb.common import USER_PATH, SOUNDPACKS_PATH
 from pyhb.cli.colors import OutputColorScheme
-from pyhb.cli.io import list_options, get_option
+from pyhb.cli.io import get_option, list_options
+from pyhb.common import SOUNDPACKS_PATH, USER_PATH
 from pyhb.utils import output
 
 
@@ -39,7 +41,7 @@ def start(soundpack: Optional[str]) -> None:
     :param soundpack:
     :return:
     """
-    from pyhb.keyboard_sound_effects import play_keybrd_sfx
+    from pyhb.keyboard_sfx import play_keybrd_sfx
 
     if soundpack is None:
         soundpack = get_sound_pack()
@@ -54,9 +56,23 @@ def install_soundpacks() -> None:
 
     :return: None
     """
-    from pyhb.install_soundpacks import install
+    click.echo("Installing all the soundpacks now...")
+    url = "https://github.com/blankRiot96/pyhb/files/7902786/Soundpacks.zip"
+    r = requests.get(url, allow_redirects=True)
 
-    install(USER_PATH.__str__())
+    with open(USER_PATH / "Soundpacks.zip", "wb") as f:
+        f.write(r.content)
+
+    file_name = USER_PATH / "Soundpacks.zip"
+
+    # Extracting zip file
+    with ZipFile(file_name, "r") as f:
+        f.extractall(path=USER_PATH)
+        print("Done!")
+
+    # Removing zip file
+    if os.path.exists(USER_PATH / "Soundpacks.zip"):
+        os.remove(USER_PATH / "Soundpacks.zip")
 
 
 @main.command(help="Lofi music to be played")

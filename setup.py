@@ -32,12 +32,14 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Topic :: Artistic Software",
         "Topic :: Multimedia :: Sound/Audio",
-        "Intended Audience :: End Users/Desktop"
+        "Intended Audience :: End Users/Desktop",
     ],
     entry_points={"console_scripts": ["pyhb=pyhb:main"]},
     include_package_data=True,
-    data_files=["pyhb/typing_tester/assets/pyhb_icon.png",
-                "pyhb/typing_tester/assets/retry_icon.png",
-                "pyhb/typing_tester/assets/settings_icon.png",
-                "pyhb/typing_tester/words.txt"],
+    data_files=[
+        "pyhb/typing_tester/assets/pyhb_icon.png",
+        "pyhb/typing_tester/assets/retry_icon.png",
+        "pyhb/typing_tester/assets/settings_icon.png",
+        "pyhb/typing_tester/words.txt",
+    ],
 )
