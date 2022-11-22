@@ -4,8 +4,9 @@ Flexible and can be used for other projects
 """
 
 
-import pygame
 from typing import List, Tuple
+
+import pygame
 
 
 class ExpandingCircle:

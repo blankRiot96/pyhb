@@ -6,7 +6,6 @@ Flexible and can be used in other projects
 
 from typing import List, Tuple
 
-
 color_count = 0
 
 

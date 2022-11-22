@@ -5,14 +5,16 @@ Some widgets may/can be used for others as well, but in most cases are project-s
 
 
 import pygame
+
+from pyhb.typing_tester.generic_types import ColorValue, Events, Pos, Size
 from pyhb.typing_tester.themes import Theme
-from pyhb.typing_tester.generic_types import Pos, ColorValue, Size, Events
 
 
 class Label:
     """
     Label widget used to display information about other widgets
     """
+
     def __init__(
         self,
         position: Pos,
@@ -96,6 +98,7 @@ class Toggle:
     (A large amount of time was spent into designing the implementation and implementing this,
      it would be disappointing if I could not use this in other projects)
     """
+
     def __init__(self, size: Size):
         self.size = size
 
@@ -286,7 +289,9 @@ class ThemeWidget:
 
         # Rects
         self.hover_pad = 3
-        self.hover_rect = pygame.Rect((0, 0), (self.size[0] + self.hover_pad, self.size[1] + self.hover_pad))
+        self.hover_rect = pygame.Rect(
+            (0, 0), (self.size[0] + self.hover_pad, self.size[1] + self.hover_pad)
+        )
 
         # Information widget
         self.label = Label(
@@ -318,7 +323,9 @@ class ThemeWidget:
         self.hover_rect.topleft = (pos[0] - self.hover_pad, pos[1] - self.hover_pad)
         pygame.draw.rect(screen, self.color, self.rect)
         if self.hover:
-            pygame.draw.rect(screen, self.select_color, self.hover_rect, width=self.hover_pad)
+            pygame.draw.rect(
+                screen, self.select_color, self.hover_rect, width=self.hover_pad
+            )
 
 
 class ThemeSelection:
@@ -349,12 +356,18 @@ class ThemeSelection:
                 (
                     index * (theme_widget.width + self.theme_widget_padding)
                     + start_pos[0],
-                    (y_increment * (theme_widget.height + self.theme_widget_padding)) + start_pos[1],
+                    (y_increment * (theme_widget.height + self.theme_widget_padding))
+                    + start_pos[1],
                 ),
             )
 
             if theme_widget.title == self.theme._id:
-                pygame.draw.rect(screen, "green", theme_widget.hover_rect, width=theme_widget.hover_pad)
+                pygame.draw.rect(
+                    screen,
+                    "green",
+                    theme_widget.hover_rect,
+                    width=theme_widget.hover_pad,
+                )
 
             if theme_widget.clicked:
                 self.theme = theme_widget.theme
@@ -371,17 +384,33 @@ class DurationSelection:
         self.font = pygame.font.SysFont("arialrounded", 25)
         self.durations = (15, 30, 45, 60)
         self.duration_txts = tuple(
-            (self.font.render(str(duration), True, theme.error_color) for duration in self.durations)
+            (
+                self.font.render(str(duration), True, theme.error_color)
+                for duration in self.durations
+            )
         )
-        self.duration_txts_rects = tuple((duration_txt.get_rect() for duration_txt in self.duration_txts))
+        self.duration_txts_rects = tuple(
+            (duration_txt.get_rect() for duration_txt in self.duration_txts)
+        )
         self.padding = 15
 
         self.chosen_duration = duration
         self.clicked = False
 
-    def draw(self, screen: pygame.Surface, start_pos: Pos, console_duration: int, mouse_pos: Pos, events: Events, error_color: ColorValue):
+    def draw(
+        self,
+        screen: pygame.Surface,
+        start_pos: Pos,
+        console_duration: int,
+        mouse_pos: Pos,
+        events: Events,
+        error_color: ColorValue,
+    ):
         self.duration_txts = tuple(
-            (self.font.render(str(duration), True, error_color) for duration in self.durations)
+            (
+                self.font.render(str(duration), True, error_color)
+                for duration in self.durations
+            )
         )
 
         # Check for events
@@ -390,23 +419,30 @@ class DurationSelection:
 
         for index, duration_rect in enumerate(self.duration_txts_rects):
             centering = 2 * (duration_rect.width + self.padding)
-            duration_rect.topleft = (start_pos[0] + (index * (duration_rect.width + self.padding)) - centering,
-                                     start_pos[1])
+            duration_rect.topleft = (
+                start_pos[0]
+                + (index * (duration_rect.width + self.padding))
+                - centering,
+                start_pos[1],
+            )
 
-        for duration, duration_rect in zip(self.duration_txts, self.duration_txts_rects):
+        for duration, duration_rect in zip(
+            self.duration_txts, self.duration_txts_rects
+        ):
             if duration_rect.collidepoint(mouse_pos):
                 duration.set_alpha(100)
                 if self.clicked:
-                    self.chosen_duration = self.durations[self.duration_txts.index(duration)]
+                    self.chosen_duration = self.durations[
+                        self.duration_txts.index(duration)
+                    ]
             else:
                 duration.set_alpha(255)
 
             screen.blit(duration, duration_rect)
 
             if console_duration == self.durations[self.duration_txts.index(duration)]:
-                rect = pygame.Rect((0, 0),
-                                   (duration_rect.width + 10,
-                                    duration_rect.height + 10))
+                rect = pygame.Rect(
+                    (0, 0), (duration_rect.width + 10, duration_rect.height + 10)
+                )
                 rect.center = duration_rect.center
                 pygame.draw.rect(screen, self.theme.font_color, rect, width=2)
-

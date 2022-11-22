@@ -1,18 +1,20 @@
-import pygame
 import math
 import random
 from typing import List, Tuple
+
+import pygame
+
 from pyhb.typing_tester.generic_types import ColorValue, Events
 from pyhb.utils import user_path
 
 
 class TextManager:
     def __init__(
-            self,
-            screen: pygame.Surface,
-            punctuation: bool,
-            color: ColorValue,
-            duration: int,
+        self,
+        screen: pygame.Surface,
+        punctuation: bool,
+        color: ColorValue,
+        duration: int,
     ):
         self.font = pygame.font.SysFont("arialrounded", 24)
         self.color = color
@@ -81,7 +83,9 @@ class TextManager:
         # Time display
         self.time_txt = self.font.render(str(self.time_left), True, self.font_color)
         self.time_txt_rect = self.time_txt.get_rect()
-        self.time_txt_pos = list((self.screen_rect.center[0], self.screen_rect.center[1] - 200))
+        self.time_txt_pos = list(
+            (self.screen_rect.center[0], self.screen_rect.center[1] - 200)
+        )
 
         # Create passage & End __init__
         self.passage: List[str] = []
@@ -124,7 +128,7 @@ class TextManager:
         """
         num_correct_words = 0
         for word, correct_word in zip(
-                " ".join(self.user_passage).split(), " ".join(self.user_passage).split()
+            " ".join(self.user_passage).split(), " ".join(self.user_passage).split()
         ):
             if word == correct_word:
                 num_correct_words += 1
@@ -161,24 +165,31 @@ class TextManager:
         # Handle screen resizing
         if resize_frame:
             self.screen_rect = self.screen.get_rect()
-            self.time_txt_pos = list((self.screen_rect.center[0],
-                                      self.screen_rect.center[1] - 200))
+            self.time_txt_pos = list(
+                (self.screen_rect.center[0], self.screen_rect.center[1] - 200)
+            )
 
         # Handle timer
-        self.time_txt = self.font.render(
-            str(self.time_left), True, self.font_color
-        )
+        self.time_txt = self.font.render(str(self.time_left), True, self.font_color)
         if self.start_test:
             self.time_passed += dt / 100
             if self.time_passed >= 1:
                 self.time_left -= 1
                 self.time_passed = 0
-            if self.time_txt_pos[0] < self.screen_rect.topright[0] - self.time_txt_rect.width - 10:
+            if (
+                self.time_txt_pos[0]
+                < self.screen_rect.topright[0] - self.time_txt_rect.width - 10
+            ):
                 pad = 10
                 target_x = self.screen_rect.topright[0] - self.time_txt_rect.width - pad
                 target_y = self.screen_rect.topright[1] + pad
-                increment_val = self.move_pos(target_x, target_y,
-                                              self.time_txt_pos[0], self.time_txt_pos[1], speed=5)
+                increment_val = self.move_pos(
+                    target_x,
+                    target_y,
+                    self.time_txt_pos[0],
+                    self.time_txt_pos[1],
+                    speed=5,
+                )
                 self.time_txt_pos[0] += increment_val[0]
                 self.time_txt_pos[1] += increment_val[1]
 
@@ -215,7 +226,7 @@ class TextManager:
                     self.current_indices[self.current_line] += 1
                     try:
                         if len(self.user_passage[self.current_line]) < len(
-                                self.passage[self.current_line]
+                            self.passage[self.current_line]
                         ):
                             self.user_passage[self.current_line] += event.unicode
                             self.start_test = True
@@ -223,8 +234,10 @@ class TextManager:
                             # Update Accuracy variables
                             self.characters_typed += 1
                             if (
-                                    event.unicode
-                                    == self.passage[self.current_line][self.current_indices[self.current_line]]
+                                event.unicode
+                                == self.passage[self.current_line][
+                                    self.current_indices[self.current_line]
+                                ]
                             ):
                                 self.correct_characters_typed += 1
                         else:
@@ -233,7 +246,7 @@ class TextManager:
                         pass
 
                     if self.current_line < len(self.passage) and len(
-                            self.user_passage[self.current_line]
+                        self.user_passage[self.current_line]
                     ) >= len(self.passage[self.current_line]):
                         self.current_line += 1
                         self.current_indices[self.current_line] = -1
@@ -241,13 +254,13 @@ class TextManager:
                         self.user_passage.append("")
                 elif event.key == pygame.K_BACKSPACE:
                     self.user_passage[self.current_line] = self.user_passage[
-                                                               self.current_line
-                                                           ][:-1]
+                        self.current_line
+                    ][:-1]
                     self.current_indices[self.current_line] -= 1
 
                     if (
-                            self.current_line != 0
-                            and not self.user_passage[self.current_line]
+                        self.current_line != 0
+                        and not self.user_passage[self.current_line]
                     ):
                         self.current_line -= 1
 
@@ -258,8 +271,8 @@ class TextManager:
         if keys[pygame.K_BACKSPACE] and self.delete and not self.start_stack:
             if self.user_passage[self.current_line]:
                 self.user_passage[self.current_line] = self.user_passage[
-                                                           self.current_line
-                                                       ][:-1]
+                    self.current_line
+                ][:-1]
                 self.current_indices[self.current_line] -= 1
                 self.cursor = "|"
             elif self.current_line != 0:
@@ -288,9 +301,9 @@ class TextManager:
             stub = []
             for column, char in enumerate(line):
                 if (
-                        self.current_line >= row
-                        and self.current_indices[row] >= column
-                        and self.user_passage[row]
+                    self.current_line >= row
+                    and self.current_indices[row] >= column
+                    and self.user_passage[row]
                 ):
                     try:
                         if self.user_passage[row][column] == self.passage[row][column]:
@@ -306,7 +319,9 @@ class TextManager:
                 text.set_alpha(150)
 
                 if self.current_line >= self.START_SCROLL_AFTER:
-                    increment = (self.FONT_HEIGHT * -(self.current_line - self.START_SCROLL_AFTER))
+                    increment = self.FONT_HEIGHT * -(
+                        self.current_line - self.START_SCROLL_AFTER
+                    )
                 else:
                     increment = 0
 
@@ -316,8 +331,11 @@ class TextManager:
                 # pos = (text_rect.topleft[0] + column * self.FONT_WIDTH, text_rect.topleft[1] + row * self.FONT_HEIGHT)
                 pos = (
                     text_rect.topleft[0] + column * self.FONT_WIDTH,
-                    (text_rect.topleft[1] + row * self.FONT_HEIGHT) +
-                    ((self.screen.get_height() // 2) - (self.FONT_HEIGHT * self.START_SCROLL_AFTER))
+                    (text_rect.topleft[1] + row * self.FONT_HEIGHT)
+                    + (
+                        (self.screen.get_height() // 2)
+                        - (self.FONT_HEIGHT * self.START_SCROLL_AFTER)
+                    ),
                 )
 
                 stub.append(pos)
@@ -363,9 +381,7 @@ class TextManager:
         if resize_frame:
             self.screen_rect = self.screen.get_rect()
 
-        self.wpm_surf = self.font.render(
-            "wpm: " + str(self.wpm), True, self.font_color
-        )
+        self.wpm_surf = self.font.render("wpm: " + str(self.wpm), True, self.font_color)
         self.accuracy_surf = self.font.render(
             "acc: " + str(self.accuracy) + "%", True, self.font_color
         )
@@ -376,11 +392,15 @@ class TextManager:
             self.accuracy_surf_rect = self.accuracy_surf.get_rect()
             self.calc_once = False
 
-        self.results_surf_rect.topright = (self.screen_rect.topright[0] - 10,
-                                           self.screen_rect.topright[1] + 10)
+        self.results_surf_rect.topright = (
+            self.screen_rect.topright[0] - 10,
+            self.screen_rect.topright[1] + 10,
+        )
         self.wpm_surf_rect.midtop = self.results_surf_rect.midtop
-        self.accuracy_surf_rect.midtop = (self.results_surf_rect.midtop[0],
-                                          self.results_surf_rect.midtop[1] + self.font.get_height())
+        self.accuracy_surf_rect.midtop = (
+            self.results_surf_rect.midtop[0],
+            self.results_surf_rect.midtop[1] + self.font.get_height(),
+        )
 
         self.screen.blit(self.wpm_surf, self.wpm_surf_rect)
         self.screen.blit(self.accuracy_surf, self.accuracy_surf_rect)

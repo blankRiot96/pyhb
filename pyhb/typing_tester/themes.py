@@ -4,6 +4,7 @@ Themes manager for the HeartBeat typing test
 
 
 import pygame
+
 from pyhb.typing_tester.generic_types import ColorValue
 
 
@@ -66,7 +67,7 @@ class Theme:
                 "error_color": pygame.Color("0xDEECFF"),
                 "settings_icon_color": (0, 0, 0),
                 "settings_transition_color": pygame.Color("0xDEECFF"),
-            }
+            },
         }
 
         (
