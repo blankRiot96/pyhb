@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 
-from pyhb.cli.colors import OutputColors
 from colorama import Fore
+
+from pyhb.cli.colors import OutputColors
 
 """Paths"""
 USER_PATH = Path(os.path.dirname(os.path.realpath(__file__)).replace("\\", "/"))

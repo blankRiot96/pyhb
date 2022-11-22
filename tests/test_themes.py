@@ -11,6 +11,7 @@ class TestThemes(unittest.TestCase):
         :return: None
         """
         from pyhb.typing_tester.themes import Theme
+
         theme = Theme("lavender")
 
         self.assertEqual(len(theme.themes), 8)
@@ -23,5 +24,5 @@ class TestThemes(unittest.TestCase):
             self.fail("Invalid color argument")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
