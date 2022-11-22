@@ -1,7 +1,8 @@
-import click
 import os
-import requests
 from zipfile import ZipFile
+
+import click
+import requests
 
 
 def install(path: str) -> None:

@@ -4,6 +4,7 @@ Themes manager for the HeartBeat typing test
 
 
 import pygame
+
 from pyhb.typing_tester.generic_types import ColorValue
 
 

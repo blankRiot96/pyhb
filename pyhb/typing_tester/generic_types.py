@@ -1,5 +1,6 @@
-import pygame
 from typing import List, Tuple, Union
+
+import pygame
 
 Pos = Union[Tuple[int, int], List[int], pygame.Vector2]
 Size = Tuple[int, int]

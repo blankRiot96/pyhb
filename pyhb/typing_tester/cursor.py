@@ -4,9 +4,10 @@ Flexible and can be used in other projects
 """
 
 
-import pygame
-from typing import Union, List, Tuple
 import random
+from typing import List, Tuple, Union
+
+import pygame
 
 
 def circle_surf(radius, color) -> pygame.Surface:

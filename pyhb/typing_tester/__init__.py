@@ -4,13 +4,14 @@ Coordinates all related objects within its main loop.
 """
 
 import time
+
 import pygame
-from pyhb.typing_tester.settings import Settings
-from pyhb.typing_tester.text_manager import TextManager
+
 from pyhb.typing_tester.cursor import Cursor
 from pyhb.typing_tester.dynamic_color import return_color
 from pyhb.typing_tester.exp_circle import ExpandingCircles
 from pyhb.typing_tester.settings import Settings
+from pyhb.typing_tester.text_manager import TextManager
 
 
 def main(screen, clock, FPS):

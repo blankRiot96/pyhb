@@ -3,8 +3,9 @@ Contains display related configuration for the HeartBeat typing test
 """
 
 
-import os
 import json
+import os
+
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
 from pygame._sdl2 import Window
