@@ -6,6 +6,7 @@ import colorama as _colorama
 
 from pyhb.cli.colors import OutputColors, OutputColorScheme
 from pyhb.common import OUTPUT_COLORS
+from pyhb.utils import output
 
 
 def _get_color_output(
@@ -32,7 +33,16 @@ def list_options(
         _click.echo(f"[{option_number + 1}] {output}")
 
 
-def get_option(prompt_msg: str) -> int:
+def get_option(prompt_msg: str, options: _t.Sequence[_t.Any]) -> _t.Any:
     """Gets one option from a list of options."""
-    prompt = int(input(prompt_msg))
-    return prompt - 1
+
+    try:
+        prompt = int(input(prompt_msg))
+    except ValueError:
+        output(_colorama.Fore.RED, "Please enter a number.")
+        exit()
+
+    if 0 > prompt >= len(options):
+        output(_colorama.Fore.RED, "Invalid entry.")
+
+    return options[prompt - 1]
