@@ -1,17 +1,18 @@
 import json
 import os
+import typing as _t
 import webbrowser
 from typing import Optional
 from zipfile import ZipFile
 
 import click
 import requests
-from colorama import Fore
 
 from pyhb.cli.colors import OutputColorScheme
 from pyhb.cli.io import get_option, list_options
-from pyhb.common import SOUNDPACKS_PATH, USER_PATH
-from pyhb.utils import output
+from pyhb.common import (INVALID_SONG_DISPLAY_MSG, LOFI_PLAYLIST,
+                         SOUNDPACKS_PATH, USER_PATH)
+from pyhb.music import scrape_songs_from_playlist
 
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
@@ -24,9 +25,9 @@ def get_sound_pack() -> str:
     soundpacks.remove("config.json")
 
     list_options(soundpacks, OutputColorScheme.GRADIENT)
-    option = get_option("Choose a soundpack: ")
+    option = get_option("Choose a soundpack: ", soundpacks)
 
-    return soundpacks[option]
+    return option
 
 
 @main.command(help="Play keyboard sound effects")
@@ -75,51 +76,29 @@ def install_soundpacks() -> None:
         os.remove(USER_PATH / "Soundpacks.zip")
 
 
+def get_song_from_cli(song: Optional[str], songs: _t.Dict[str, str]) -> str:
+    """Retrieves a song from the CLI."""
+    if song is None:
+        list_options(songs, OutputColorScheme.RANDOM)
+        option = get_option("Choose a song: ", list(songs.values()))
+        return option
+
+    if song in songs:
+        return songs[song]
+    else:
+        click.echo(INVALID_SONG_DISPLAY_MSG.format(song=song))
+        exit()
+
+
 @main.command(help="Lofi music to be played")
 @click.option("--song", "-s", is_flag=False, flag_value="", help="Choose a song")
 def play(song: Optional[str]) -> None:
-    """
-    Plays a song of user's choice from YouTube
-    To view full playlist visit -
-    https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD
-    or try `pyhb play`
+    """Plays a song."""
 
-    :param song: Song to be played
-    :return: None
-    """
+    songs = scrape_songs_from_playlist(LOFI_PLAYLIST)
+    song = get_song_from_cli(song, songs)
 
-    global COLORS
-    songs = {
-        "lofigirl": "https://www.youtube.com/watch?v=5qap5aO4i9A",
-        "biscuit": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY",
-        "melancholy": "https://www.youtube.com/watch?v=RxglYGHuqFc",
-        "street lights": "https://www.youtube.com/watch?v=FqXwkqfVGvA",
-        "memory lane": "https://www.youtube.com/watch?v=6LXTuNDB160",
-        "jiro dreams": "https://www.youtube.com/watch?v=sEYSpROMY5A",
-        "*": "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD",
-    }
-
-    # If song provided, play it if it exists inside of the playlist
-    if song:
-        if song in songs:
-            webbrowser.open(songs[song])
-        else:
-            output(Fore.RED, f"song '{song}' does not exist in the playlist.")
-            output(
-                Fore.YELLOW, f"To view the full list of songs, check the playlist - "
-            )
-            output(
-                Fore.YELLOW,
-                "https://www.youtube.com/watch?v=EtZ2m2Zm3vY&list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD",
-            )
-    else:
-        list_options(songs, OutputColorScheme.RANDOM)
-
-        try:
-            promt = int(input("Choose a song number: "))
-            webbrowser.open(list(songs.values())[promt - 1])
-        except (ValueError, IndexError):
-            output(Fore.RED, "Invalid entry.")
+    webbrowser.open(song)
 
 
 @main.command(help="Start an aesthetic typing test application")

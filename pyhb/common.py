@@ -9,12 +9,7 @@ from pyhb.cli.colors import OutputColors
 USER_PATH = Path(os.path.dirname(os.path.realpath(__file__)).replace("\\", "/"))
 SOUNDPACKS_PATH = USER_PATH / "Soundpacks"
 
-"""Display Messages"""
-KEYBOARD_TYPING_DISPLAY_MSG = """Playing '{sound_pack}'. 
-Press <ctrl + c> to exit.
-"""
-
-"""Colors"""
+"""Other Constants"""
 OUTPUT_COLORS = OutputColors(
     Fore.BLUE,
     Fore.CYAN,
@@ -30,4 +25,19 @@ OUTPUT_COLORS = OutputColors(
     Fore.RED,
     Fore.RESET,
     Fore.YELLOW,
+)
+LOFI_PLAYLIST = (
+    "https://www.youtube.com/playlist?list=PL6AyRhZu1p3KfZ56ToC0xZxIlpBLOsKXD"
+)
+
+"""Display Messages"""
+KEYBOARD_TYPING_DISPLAY_MSG = """Playing '{sound_pack}'. 
+{color}Press <ctrl + c> to exit.{reset}
+""".format(
+    sound_pack="{sound_pack}", color=Fore.YELLOW, reset=Fore.RESET
+)
+INVALID_SONG_DISPLAY_MSG = """Song '{song}' does not exist in the playlist.
+For a the full list of songs see {lofi_playlist}
+""".format(
+    song="{song}", lofi_playlist=LOFI_PLAYLIST
 )
