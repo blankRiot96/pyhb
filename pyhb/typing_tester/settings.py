@@ -7,8 +7,7 @@ import pygame
 
 from pyhb.typing_tester.generic_types import ColorValue, Events, Pos, Size
 from pyhb.typing_tester.themes import Theme
-from pyhb.typing_tester.widgets import (DurationSelection, Label,
-                                        ThemeSelection, Toggle)
+from pyhb.typing_tester.widgets import DurationSelection, Label, ThemeSelection, Toggle
 
 
 def circle_surf(radius, color) -> pygame.Surface:
