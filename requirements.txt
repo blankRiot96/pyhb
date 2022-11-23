@@ -4,3 +4,5 @@ pygame~=2.1.0
 requests~=2.26.0
 keyboard~=0.13.5
 setuptools~=57.0.0
+pytube~=12.1.0
+beautifulsoup4~=4.11.1 
