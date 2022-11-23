@@ -10,9 +10,13 @@ import requests
 
 from pyhb.cli.colors import OutputColorScheme
 from pyhb.cli.io import get_option, list_options
-from pyhb.common import (INVALID_SONG_DISPLAY_MSG, LOFI_PLAYLIST,
-                         SOUNDPACKS_PATH, USER_PATH)
-from pyhb.music import scrape_songs_from_playlist
+from pyhb.common import (
+    INVALID_SONG_DISPLAY_MSG,
+    LOFI_PLAYLIST,
+    SOUNDPACKS_PATH,
+    USER_PATH,
+)
+from pyhb.music import get_song_from_list, get_song_url, scrape_songs_from_playlist
 
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
@@ -76,29 +80,18 @@ def install_soundpacks() -> None:
         os.remove(USER_PATH / "Soundpacks.zip")
 
 
-def get_song_from_cli(song: Optional[str], songs: _t.Dict[str, str]) -> str:
-    """Retrieves a song from the CLI."""
-    if song is None:
-        list_options(songs, OutputColorScheme.RANDOM)
-        option = get_option("Choose a song: ", list(songs.values()))
-        return option
-
-    if song in songs:
-        return songs[song]
-    else:
-        click.echo(INVALID_SONG_DISPLAY_MSG.format(song=song))
-        exit()
-
-
 @main.command(help="Lofi music to be played")
-@click.option("--song", "-s", is_flag=False, flag_value="", help="Choose a song")
-def play(song: Optional[str]) -> None:
+@click.option("--song", "-s", "song_title", help="Title of song to play")
+def play(song_title: Optional[str]) -> None:
     """Plays a song."""
 
     songs = scrape_songs_from_playlist(LOFI_PLAYLIST)
-    song = get_song_from_cli(song, songs)
+    if song_title is None:
+        song_url = get_song_from_list(songs)
+    else:
+        song_url = get_song_url(song_title, songs)
 
-    webbrowser.open(song)
+    webbrowser.open(song_url)
 
 
 @main.command(help="Start an aesthetic typing test application")
